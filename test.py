@@ -95,79 +95,154 @@ def generate_first_image(state: global_state.GlobalState, cfg: src.config.Rerend
     return control_net.decode_first_stage(samples)
 
 
-def generate_next_image(state: global_state.GlobalState, cfg: src.config.RerenderConfig, first_result, first_img):
+def generate_next_image(
+        state: global_state.GlobalState,
+        cfg: src.config.RerenderConfig,
+        first_result,
+        first_img,
+        pre_result,
+        pre_img,
+        image,
+):
     control_net = state.ddim_v_sampler.model
 
     num_samples = 1
-    imgs = sorted(os.listdir(cfg.input_dir))
-    imgs = [os.path.join(cfg.input_dir, img) for img in imgs]
-
-    pre_result = first_result
-    pre_img = first_img
 
     blur = transforms.GaussianBlur(kernel_size=(9, 9), sigma=(18, 18))
 
-    for i in range(0, cfg.frame_count - 1, cfg.interval):
-        cid = i + 1
-        frame = cv2.imread(imgs[i + 1])
-        print(cid)
-        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        img = ControlNet.annotator.util.HWC3(frame)
-        height, width, _ = img.shape
+    height, width, _ = image.shape
 
-        img_ = src.img_util.numpy2tensor(img)
+    img_ = src.img_util.numpy2tensor(image)
 
-        encoder_posterior = control_net.encode_first_stage(img_.to(global_state.device))
-        x0 = control_net.get_first_stage_encoding(encoder_posterior).detach()
+    encoder_posterior = control_net.encode_first_stage(img_.to(global_state.device))
+    x0 = control_net.get_first_stage_encoding(encoder_posterior).detach()
 
-        detected_map = state.detector.detector(img)
-        detected_map = ControlNet.annotator.util.HWC3(detected_map)
+    detected_map = state.detector.detector(image)
+    detected_map = ControlNet.annotator.util.HWC3(detected_map)
 
-        control = torch.from_numpy(
-            detected_map.copy()).float().to(global_state.device) / 255.0
-        control = torch.stack([control for _ in range(num_samples)], dim=0)
-        control = einops.rearrange(control, 'b h w c -> b c h w').clone()
-        cond = {
-            'c_concat': [control],
-            'c_crossattn': [
-                control_net.get_learned_conditioning(
-                    [cfg.prompt + ', ' + cfg.a_prompt] * num_samples)
-            ]
-        }
-        un_cond = {
-            'c_concat': [control],
-            'c_crossattn':
-                [control_net.get_learned_conditioning([cfg.n_prompt] * num_samples)]
-        }
-        shape = (4, height // 8, width // 8)
+    control = torch.from_numpy(
+        detected_map.copy()).float().to(global_state.device) / 255.0
+    control = torch.stack([control for _ in range(num_samples)], dim=0)
+    control = einops.rearrange(control, 'b h w c -> b c h w').clone()
+    cond = {
+        'c_concat': [control],
+        'c_crossattn': [
+            control_net.get_learned_conditioning(
+                [cfg.prompt + ', ' + cfg.a_prompt] * num_samples)
+        ]
+    }
+    un_cond = {
+        'c_concat': [control],
+        'c_crossattn':
+            [control_net.get_learned_conditioning([cfg.n_prompt] * num_samples)]
+    }
+    shape = (4, height // 8, width // 8)
 
-        cond['c_concat'] = [control]
-        un_cond['c_concat'] = [control]
+    cond['c_concat'] = [control]
+    un_cond['c_concat'] = [control]
 
-        image1 = torch.from_numpy(pre_img).permute(2, 0, 1).float()
-        image2 = torch.from_numpy(img).permute(2, 0, 1).float()
-        warped_pre, bwd_occ_pre, bwd_flow_pre = flow.flow_utils.get_warped_and_mask(
-            state.flow_model, image1, image2, pre_result, False)
-        blend_mask_pre = blur(
-            functional.max_pool2d(bwd_occ_pre, kernel_size=9, stride=1, padding=4))
-        blend_mask_pre = torch.clamp(blend_mask_pre + bwd_occ_pre, 0, 1)
+    image1 = torch.from_numpy(pre_img).permute(2, 0, 1).float()
+    image2 = torch.from_numpy(image).permute(2, 0, 1).float()
+    warped_pre, bwd_occ_pre, bwd_flow_pre = flow.flow_utils.get_warped_and_mask(
+        state.flow_model, image1, image2, pre_result, False)
+    blend_mask_pre = blur(
+        functional.max_pool2d(bwd_occ_pre, kernel_size=9, stride=1, padding=4))
+    blend_mask_pre = torch.clamp(blend_mask_pre + bwd_occ_pre, 0, 1)
 
-        image1 = torch.from_numpy(first_img).permute(2, 0, 1).float()
-        warped_0, bwd_occ_0, bwd_flow_0 = flow.flow_utils.get_warped_and_mask(
-            state.flow_model, image1, image2, first_result, False)
-        blend_mask_0 = blur(
-            functional.max_pool2d(bwd_occ_0, kernel_size=9, stride=1, padding=4))
-        blend_mask_0 = torch.clamp(blend_mask_0 + bwd_occ_0, 0, 1)
+    image1 = torch.from_numpy(first_img).permute(2, 0, 1).float()
+    warped_0, bwd_occ_0, bwd_flow_0 = flow.flow_utils.get_warped_and_mask(
+        state.flow_model, image1, image2, first_result, False)
+    blend_mask_0 = blur(
+        functional.max_pool2d(bwd_occ_0, kernel_size=9, stride=1, padding=4))
+    blend_mask_0 = torch.clamp(blend_mask_0 + bwd_occ_0, 0, 1)
 
-        mask = 1 - functional.max_pool2d(blend_mask_0, kernel_size=8)
-        state.controller.set_warp(
-            functional.interpolate(bwd_flow_0 / 8.0,
-                                   scale_factor=1. / 8,
-                                   mode='bilinear'), mask)
+    mask = 1 - functional.max_pool2d(blend_mask_0, kernel_size=8)
+    state.controller.set_warp(
+        functional.interpolate(bwd_flow_0 / 8.0,
+                               scale_factor=1. / 8,
+                               mode='bilinear'), mask)
 
-        state.controller.set_task('keepx0, keepstyle')
+    state.controller.set_task('keepx0, keepstyle')
+    accelerate.utils.set_seed(cfg.seed)
+    samples, intermediates = state.ddim_v_sampler.sample(
+        cfg.ddim_steps,
+        num_samples,
+        shape,
+        cond,
+        verbose=False,
+        unconditional_guidance_scale=cfg.scale,
+        unconditional_conditioning=un_cond,
+        controller=state.controller,
+        x0=x0,
+        strength=1 - cfg.x0_strength
+    )
+    direct_result = control_net.decode_first_stage(samples)
+
+    if not cfg.use_mask:
+        pre_result = direct_result
+        pre_img = image
+        viz = (
+                einops.rearrange(direct_result, 'b c h w -> b h w c') * 127.5 +
+                127.5).cpu().numpy().clip(0, 255).astype(numpy.uint8)
+
+    else:
+
+        blend_results = (1 - blend_mask_pre
+                         ) * warped_pre + blend_mask_pre * direct_result
+        blend_results = (
+                                1 - blend_mask_0) * warped_0 + blend_mask_0 * blend_results
+
+        bwd_occ = 1 - torch.clamp(1 - bwd_occ_pre + 1 - bwd_occ_0, 0, 1)
+        blend_mask = blur(
+            functional.max_pool2d(bwd_occ, kernel_size=9, stride=1, padding=4))
+        blend_mask = 1 - torch.clamp(blend_mask + bwd_occ, 0, 1)
+
+        encoder_posterior = control_net.encode_first_stage(blend_results)
+        xtrg = control_net.get_first_stage_encoding(
+            encoder_posterior).detach()  # * mask
+        blend_results_rec = control_net.decode_first_stage(xtrg)
+        encoder_posterior = control_net.encode_first_stage(blend_results_rec)
+        xtrg_rec = control_net.get_first_stage_encoding(
+            encoder_posterior).detach()
+        xtrg_ = (xtrg + 1 * (xtrg - xtrg_rec))  # * mask
+        blend_results_rec_new = control_net.decode_first_stage(xtrg_)
+        tmp = (abs(blend_results_rec_new - blend_results).mean(
+            dim=1, keepdims=True) > 0.25).float()
+        mask_x = functional.max_pool2d((functional.interpolate(tmp,
+                                                               scale_factor=1 / 8.,
+                                                               mode='bilinear') > 0).float(),
+                                       kernel_size=3,
+                                       stride=1,
+                                       padding=1)
+
+        mask = (1 - functional.max_pool2d(1 - blend_mask, kernel_size=8)
+                )  # * (1-mask_x)
+
+        if cfg.smooth_boundary:
+            noise_rescale = src.img_util.find_flat_region(mask)
+        else:
+            noise_rescale = torch.ones_like(mask)
+        masks = []
+        for i2 in range(cfg.ddim_steps):
+            if i2 <= cfg.ddim_steps * cfg.mask_period[0] or i2 >= cfg.ddim_steps * cfg.mask_period[1]:
+                masks += [None]
+            else:
+                masks += [mask * cfg.mask_strength]
+
+        # mask 3
+        # xtrg = ((1-mask_x) *
+        #         (xtrg + xtrg - xtrg_rec) + mask_x * samples) * mask
+        # mask 2
+        # xtrg = (xtrg + 1 * (xtrg - xtrg_rec)) * mask
+        xtrg = (xtrg + (1 - mask_x) * (xtrg - xtrg_rec)) * mask  # mask 1
+
+        tasks = 'keepstyle, keepx0'
+        if i % cfg.style_update_freq == 0:
+            tasks += ', updatestyle'
+        state.controller.set_task(tasks, 1.0)
+
         accelerate.utils.set_seed(cfg.seed)
-        samples, intermediates = state.ddim_v_sampler.sample(
+        samples, _ = state.ddim_v_sampler.sample(
             cfg.ddim_steps,
             num_samples,
             shape,
@@ -177,103 +252,18 @@ def generate_next_image(state: global_state.GlobalState, cfg: src.config.Rerende
             unconditional_conditioning=un_cond,
             controller=state.controller,
             x0=x0,
-            strength=1 - cfg.x0_strength
-        )
-        direct_result = control_net.decode_first_stage(samples)
+            strength=1 - cfg.x0_strength,
+            xtrg=xtrg,
+            mask=masks,
+            noise_rescale=noise_rescale)
+        x_samples = control_net.decode_first_stage(samples)
+        pre_result = x_samples
+        pre_img = image
 
-        if not cfg.use_mask:
-            pre_result = direct_result
-            pre_img = img
-            viz = (
-                    einops.rearrange(direct_result, 'b c h w -> b h w c') * 127.5 +
-                    127.5).cpu().numpy().clip(0, 255).astype(numpy.uint8)
+        viz_normalized = einops.rearrange(x_samples, 'b c h w -> b h w c') * 127.5 + 127.5
+        viz = viz_normalized.cpu().numpy().clip(0, 255).astype(numpy.uint8)
 
-        else:
-
-            blend_results = (1 - blend_mask_pre
-                             ) * warped_pre + blend_mask_pre * direct_result
-            blend_results = (
-                                    1 - blend_mask_0) * warped_0 + blend_mask_0 * blend_results
-
-            bwd_occ = 1 - torch.clamp(1 - bwd_occ_pre + 1 - bwd_occ_0, 0, 1)
-            blend_mask = blur(
-                functional.max_pool2d(bwd_occ, kernel_size=9, stride=1, padding=4))
-            blend_mask = 1 - torch.clamp(blend_mask + bwd_occ, 0, 1)
-
-            encoder_posterior = control_net.encode_first_stage(blend_results)
-            xtrg = control_net.get_first_stage_encoding(
-                encoder_posterior).detach()  # * mask
-            blend_results_rec = control_net.decode_first_stage(xtrg)
-            encoder_posterior = control_net.encode_first_stage(blend_results_rec)
-            xtrg_rec = control_net.get_first_stage_encoding(
-                encoder_posterior).detach()
-            xtrg_ = (xtrg + 1 * (xtrg - xtrg_rec))  # * mask
-            blend_results_rec_new = control_net.decode_first_stage(xtrg_)
-            tmp = (abs(blend_results_rec_new - blend_results).mean(
-                dim=1, keepdims=True) > 0.25).float()
-            mask_x = functional.max_pool2d((functional.interpolate(tmp,
-                                                                   scale_factor=1 / 8.,
-                                                                   mode='bilinear') > 0).float(),
-                                           kernel_size=3,
-                                           stride=1,
-                                           padding=1)
-
-            mask = (1 - functional.max_pool2d(1 - blend_mask, kernel_size=8)
-                    )  # * (1-mask_x)
-
-            if cfg.smooth_boundary:
-                noise_rescale = src.img_util.find_flat_region(mask)
-            else:
-                noise_rescale = torch.ones_like(mask)
-            masks = []
-            for i2 in range(cfg.ddim_steps):
-                if i2 <= cfg.ddim_steps * cfg.mask_period[0] or i2 >= cfg.ddim_steps * cfg.mask_period[1]:
-                    masks += [None]
-                else:
-                    masks += [mask * cfg.mask_strength]
-
-            # mask 3
-            # xtrg = ((1-mask_x) *
-            #         (xtrg + xtrg - xtrg_rec) + mask_x * samples) * mask
-            # mask 2
-            # xtrg = (xtrg + 1 * (xtrg - xtrg_rec)) * mask
-            xtrg = (xtrg + (1 - mask_x) * (xtrg - xtrg_rec)) * mask  # mask 1
-
-            tasks = 'keepstyle, keepx0'
-            if i % cfg.style_update_freq == 0:
-                tasks += ', updatestyle'
-            state.controller.set_task(tasks, 1.0)
-
-            accelerate.utils.set_seed(cfg.seed)
-            samples, _ = state.ddim_v_sampler.sample(
-                cfg.ddim_steps,
-                num_samples,
-                shape,
-                cond,
-                verbose=False,
-                unconditional_guidance_scale=cfg.scale,
-                unconditional_conditioning=un_cond,
-                controller=state.controller,
-                x0=x0,
-                strength=1 - cfg.x0_strength,
-                xtrg=xtrg,
-                mask=masks,
-                noise_rescale=noise_rescale)
-            x_samples = control_net.decode_first_stage(samples)
-            pre_result = x_samples
-            pre_img = img
-
-            viz_normalized = einops.rearrange(x_samples, 'b c h w -> b h w c') * 127.5 + 127.5
-            viz = viz_normalized.cpu().numpy().clip(0, 255).astype(numpy.uint8)
-
-        PIL.Image.fromarray(viz[0]).save(os.path.join(cfg.key_dir, f'{cid:04d}.png'))
-
-    key_video_path = os.path.join(cfg.work_dir, 'key.mp4')
-    fps = src.video_util.get_fps(cfg.input_path)
-    fps //= cfg.interval
-    src.video_util.frame_to_video(key_video_path, cfg.key_dir, fps, False)
-
-    return key_video_path
+    PIL.Image.fromarray(viz[0]).save(os.path.join(cfg.key_dir, f'{cid:04d}.png'))
 
 
 def get_config(input_, output, prompt) -> src.config.RerenderConfig:
