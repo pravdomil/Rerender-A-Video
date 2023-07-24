@@ -93,12 +93,12 @@ def generate_first_result(state: global_state.GlobalState, cfg: src.config.Reren
 def generate_next_image(
         state: global_state.GlobalState,
         cfg: src.config.RerenderConfig,
-        first_image,
-        first_result,
-        previous_image,
-        previous_result,
+        first_image: numpy.ndarray,
+        first_result: torch.Tensor,
+        previous_image: numpy.ndarray,
+        previous_result: torch.Tensor,
         i: int,
-        image,
+        image: numpy.ndarray,
 ):
     control_net = state.ddim_v_sampler.model
 
