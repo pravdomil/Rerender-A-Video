@@ -39,7 +39,10 @@ def main(cfg: src.config.RerenderConfig):
         ffmpeg_params=["-crf", "15", "-metadata", "title=Rerender A Video\n" + cfg.prompt],
     )
 
-    for i in range(0, 16, cfg.interval):
+    frame_indexes = range(0, 16, cfg.interval)
+    for i in frame_indexes:
+        print(round(i / len(frame_indexes) * 100) + "%")
+        
         reader.seek(0)
         image = reader.next().asnumpy()
 
