@@ -43,17 +43,17 @@ def process1(cfg: src.config.RerenderConfig):
     return generate_first_img(cfg, state, input_image)
 
 
-def generate_first_img(cfg: src.config.RerenderConfig, state: global_state.GlobalState, img):
+def generate_first_img(cfg: src.config.RerenderConfig, state: global_state.GlobalState, input_image):
     control_net = state.ddim_v_sampler.model
-    height, width, _ = img.shape
-    tensor_image = src.img_util.numpy2tensor(img)
+    height, width, _ = input_image.shape
+    tensor_image = src.img_util.numpy2tensor(input_image)
 
     num_samples = 1
 
     encoder_posterior = control_net.encode_first_stage(tensor_image.to(global_state.device))
     x0 = control_net.get_first_stage_encoding(encoder_posterior).detach()
 
-    detected_map = state.detector(img)
+    detected_map = state.detector(input_image)
     detected_map = ControlNet.annotator.util.HWC3(detected_map)
 
     control = torch.from_numpy(detected_map.copy()).float().to(global_state.device) / 255.0
