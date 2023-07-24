@@ -105,7 +105,6 @@ def process2(cfg: src.config.RerenderConfig, first_result, first_img):
     model.control_scales = [cfg.control_strength] * 13
 
     num_samples = 1
-    eta = 0.0
     firstx0 = True
     pixelfusion = cfg.use_mask
     imgs = sorted(os.listdir(cfg.input_dir))
@@ -189,7 +188,6 @@ def process2(cfg: src.config.RerenderConfig, first_result, first_img):
             shape,
             cond,
             verbose=False,
-            eta=eta,
             unconditional_guidance_scale=cfg.scale,
             unconditional_conditioning=un_cond,
             controller=state.controller,
