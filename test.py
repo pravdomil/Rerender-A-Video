@@ -62,7 +62,7 @@ def generate_first_img(cfg: src.config.RerenderConfig, state: global_state.Globa
     control = torch.from_numpy(detected_map.copy()).float().to(global_state.device) / 255.0
     control = torch.stack([control for _ in range(num_samples)], dim=0)
     control = einops.rearrange(control, 'b h w c -> b c h w').clone()
-    cond = {
+    conditioning = {
         'c_concat': [control],
         'c_crossattn': [
             model.get_learned_conditioning(
@@ -83,7 +83,7 @@ def generate_first_img(cfg: src.config.RerenderConfig, state: global_state.Globa
         cfg.ddim_steps,
         num_samples,
         shape,
-        cond,
+        conditioning,
         verbose=False,
         eta=0.0,
         unconditional_guidance_scale=cfg.scale,
