@@ -25,9 +25,7 @@ import src.video_util
 blur = transforms.GaussianBlur(kernel_size=(9, 9), sigma=(18, 18))
 
 
-def process1():
-    cfg = get_config()
-
+def process1(cfg: src.config.RerenderConfig):
     state = global_state.GlobalState()
     state.update_sd_model(cfg.sd_model, cfg.control_type)
     state.update_controller(cfg.inner_strength, cfg.mask_period, cfg.cross_period, cfg.ada_period, cfg.warp_period)
@@ -95,9 +93,7 @@ def generate_first_img(cfg: src.config.RerenderConfig, state: global_state.Globa
     return samples, samples_np
 
 
-def process2():
-    cfg = get_config()
-
+def process2(cfg: src.config.RerenderConfig):
     state = global_state.GlobalState()
     state.update_sd_model(cfg.sd_model, cfg.control_type)
     state.update_detector(cfg.control_type, cfg.canny_low, cfg.canny_high)
@@ -307,12 +303,12 @@ def process2():
     return key_video_path
 
 
-def get_config() -> src.config.RerenderConfig:
+def get_config(input, output, prompt) -> src.config.RerenderConfig:
     a = src.config.RerenderConfig()
     a.create_from_parameters(
-        "input.mp4",
-        "output.mp4",
-        "watercolor painting",
+        input,
+        output,
+        prompt,
         work_dir=None,
         key_subdir='keys',
         frame_count=None,
@@ -360,6 +356,6 @@ def apply_color_correction(correction, original_image):
     return image
 
 
-x_samples, x_samples_np = process1()
+x_samples, x_samples_np = process1(get_config("input.mp4", "output.mp4", "watercolor painting"))
 # noinspection PyUnresolvedReferences
 display(PIL.Image.fromarray(x_samples_np[0]))
