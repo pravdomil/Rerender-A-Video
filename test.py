@@ -138,7 +138,7 @@ def generate_next_image(
     encoder_posterior = control_net.encode_first_stage(img_.to(global_state.device))
     x0 = control_net.get_first_stage_encoding(encoder_posterior).detach()
 
-    detected_map = state.detector.detector(image)
+    detected_map = state.detector(image)
     detected_map = ControlNet.annotator.util.HWC3(detected_map)
 
     control = torch.from_numpy(detected_map.copy()).float().to(global_state.device) / 255.0
