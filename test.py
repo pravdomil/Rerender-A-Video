@@ -99,7 +99,6 @@ def generate_next_image(state: global_state.GlobalState, cfg: src.config.Rerende
     control_net = state.ddim_v_sampler.model
 
     num_samples = 1
-    firstx0 = True
     pixelfusion = cfg.use_mask
     imgs = sorted(os.listdir(cfg.input_dir))
     imgs = [os.path.join(cfg.input_dir, img) for img in imgs]
@@ -161,18 +160,11 @@ def generate_next_image(state: global_state.GlobalState, cfg: src.config.Rerende
             functional.max_pool2d(bwd_occ_0, kernel_size=9, stride=1, padding=4))
         blend_mask_0 = torch.clamp(blend_mask_0 + bwd_occ_0, 0, 1)
 
-        if firstx0:
-            mask = 1 - functional.max_pool2d(blend_mask_0, kernel_size=8)
-            state.controller.set_warp(
-                functional.interpolate(bwd_flow_0 / 8.0,
-                                       scale_factor=1. / 8,
-                                       mode='bilinear'), mask)
-        else:
-            mask = 1 - functional.max_pool2d(blend_mask_pre, kernel_size=8)
-            state.controller.set_warp(
-                functional.interpolate(bwd_flow_pre / 8.0,
-                                       scale_factor=1. / 8,
-                                       mode='bilinear'), mask)
+        mask = 1 - functional.max_pool2d(blend_mask_0, kernel_size=8)
+        state.controller.set_warp(
+            functional.interpolate(bwd_flow_0 / 8.0,
+                                   scale_factor=1. / 8,
+                                   mode='bilinear'), mask)
 
         state.controller.set_task('keepx0, keepstyle')
         accelerate.utils.set_seed(cfg.seed)
@@ -249,8 +241,6 @@ def generate_next_image(state: global_state.GlobalState, cfg: src.config.Rerende
             xtrg = (xtrg + (1 - mask_x) * (xtrg - xtrg_rec)) * mask  # mask 1
 
             tasks = 'keepstyle, keepx0'
-            if not firstx0:
-                tasks += ', updatex0'
             if i % cfg.style_update_freq == 0:
                 tasks += ', updatestyle'
             state.controller.set_task(tasks, 1.0)
