@@ -29,10 +29,10 @@ def process1(cfg: src.config.RerenderConfig):
     reader = decord.VideoReader(cfg.input_path)
     image = reader.next().asnumpy()
 
-    return generate_first_img(cfg, image)
+    return generate_first_image(cfg, image)
 
 
-def generate_first_img(cfg: src.config.RerenderConfig, input_image):
+def generate_first_image(cfg: src.config.RerenderConfig, input_image):
     state = global_state.GlobalState()
     state.update_sd_model(cfg.sd_model, cfg.control_type)
     state.update_controller(cfg.inner_strength, cfg.mask_period, cfg.cross_period, cfg.ada_period, cfg.warp_period)
