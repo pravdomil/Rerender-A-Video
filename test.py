@@ -354,8 +354,3 @@ def apply_color_correction(correction, original_image):
     image = blendmodes.blend.blendLayers(image, original_image, blendmodes.blend.BlendType.LUMINOSITY)
 
     return image
-
-
-x_samples, x_samples_np = process1(get_config("input.mp4", "output.mp4", "watercolor painting"))
-# noinspection PyUnresolvedReferences
-display(PIL.Image.fromarray(x_samples_np[0]))
