@@ -31,7 +31,7 @@ def main(cfg: src.config.RerenderConfig):
 
     state = get_state(cfg)
 
-    return generate_first_image(state, cfg, image)
+    first_result = generate_first_image(state, cfg, image)
 
 
 def get_state(cfg: src.config.RerenderConfig):
@@ -95,7 +95,7 @@ def generate_first_image(state: global_state.GlobalState, cfg: src.config.Rerend
     return control_net.decode_first_stage(samples)
 
 
-def process2(state: global_state.GlobalState, cfg: src.config.RerenderConfig, first_result, first_img):
+def generate_next_image(state: global_state.GlobalState, cfg: src.config.RerenderConfig, first_result, first_img):
     control_net = state.ddim_v_sampler.model
 
     num_samples = 1
