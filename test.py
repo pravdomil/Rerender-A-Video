@@ -37,9 +37,10 @@ def process1(cfg: src.config.RerenderConfig):
     control_net.cond_stage_model.device = global_state.device
     control_net.to(global_state.device)
 
-    input_image = cv2.imread(cfg.input_path)
-    input_image = cv2.cvtColor(input_image, cv2.COLOR_BGR2RGB)
-    input_image = ControlNet.annotator.util.HWC3(input_image)
+    # noinspection PyUnresolvedReferences
+    import decord
+    reader = decord.VideoReader(cfg.input_path)
+    input_image = reader.next().asnumpy()
 
     return generate_first_img(cfg, state, input_image, 1 - cfg.x0_strength)
 
