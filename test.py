@@ -65,14 +65,12 @@ def generate_first_img(cfg: src.config.RerenderConfig, state: global_state.Globa
     conditioning = {
         'c_concat': [control],
         'c_crossattn': [
-            model.get_learned_conditioning(
-                [cfg.prompt + ', ' + cfg.a_prompt] * num_samples)
+            model.get_learned_conditioning([cfg.prompt + ', ' + cfg.a_prompt] * num_samples)
         ]
     }
     unconditional_conditioning = {
         'c_concat': [control],
-        'c_crossattn':
-            [model.get_learned_conditioning([cfg.n_prompt] * num_samples)]
+        'c_crossattn': [model.get_learned_conditioning([cfg.n_prompt] * num_samples)]
     }
     shape = (4, height // 8, width // 8)
 
