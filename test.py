@@ -23,7 +23,7 @@ def main(cfg: src.config.RerenderConfig):
 
     # noinspection PyUnresolvedReferences
     import decord
-    reader = decord.VideoReader(cfg.input_path)
+    reader = decord.VideoReader(cfg.input_path, width=cfg.image_resolution, height=cfg.image_resolution)
 
     first_image = reader.next().asnumpy()
     first_result = generate_first_result(state, cfg, first_image)
