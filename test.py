@@ -46,7 +46,7 @@ def process1():
     return generate_first_img(cfg, state, input_image, 1 - cfg.x0_strength)
 
 
-def generate_first_img(cfg, state, img, strength):
+def generate_first_img(cfg: src.config.RerenderConfig, state: global_state.GlobalState, img, strength):
     model = state.ddim_v_sampler.model
     height, width, _ = img.shape
     img_ = src.img_util.numpy2tensor(img)
