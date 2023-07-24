@@ -209,7 +209,6 @@ class DDIMVSampler(object):
         # sampling
         C, H, W = shape
         size = (batch_size, C, H, W)
-        print(f'Data shape for DDIM sampling is {size}, eta {eta}')
 
         samples, intermediates = self.ddim_sampling(
             conditioning,
@@ -290,7 +289,6 @@ class DDIMVSampler(object):
             0, timesteps)) if ddim_use_original_steps else np.flip(timesteps)
         total_steps = timesteps if ddim_use_original_steps \
             else timesteps.shape[0]
-        print(f'Running DDIM Sampling with {total_steps} timesteps')
 
         iterator = tqdm(time_range, desc='DDIM Sampler', total=total_steps)
         if controller is not None:
@@ -544,7 +542,6 @@ class DDIMVSampler(object):
 
         time_range = np.flip(timesteps)
         total_steps = timesteps.shape[0]
-        print(f'Running DDIM Sampling with {total_steps} timesteps')
 
         iterator = tqdm(time_range, desc='Decoding image', total=total_steps)
         x_dec = x_latent
