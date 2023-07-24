@@ -36,7 +36,7 @@ def main(cfg: src.config.RerenderConfig):
         cfg.output_path,
         (cfg.image_resolution, cfg.image_resolution),
         reader.get_avg_fps() / cfg.interval,
-        ffmpeg_params=["-crf", "15", "-metadata", "title=Rerender A Video"],
+        ffmpeg_params=["-crf", "15", "-metadata", "title=Rerender A Video\n" + cfg.prompt],
     )
 
     for i in range(0, 16, cfg.interval):
