@@ -26,7 +26,7 @@ def main(cfg: src.config.RerenderConfig):
 
     state = get_state(cfg)
 
-    first_result = generate_first_image(state, cfg, image)
+    first_image = generate_first_image(state, cfg, image)
 
 
 def get_state(cfg: src.config.RerenderConfig):
@@ -244,6 +244,11 @@ def generate_next_image(
         )
 
         return control_net.decode_first_stage(samples)
+
+
+def torch_to_numpy(a: torch.Tensor) -> numpy.ndarray:
+    samples_normalized = einops.rearrange(a, 'b c h w -> b h w c') * 127.5 + 127.5
+    return samples_normalized.cpu().numpy().clip(0, 255).astype(numpy.uint8)
 
 
 def get_config(input_, output, prompt) -> src.config.RerenderConfig:
