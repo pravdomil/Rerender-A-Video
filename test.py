@@ -48,8 +48,8 @@ def get_state(cfg: src.config.RerenderConfig):
     return state
 
 
-def generate_first_image(state: global_state.GlobalState, cfg: src.config.RerenderConfig, input_image: numpy.ndarray) \
-        -> (global_state.GlobalState, torch.Tensor):
+def generate_first_image(state: global_state.GlobalState, cfg: src.config.RerenderConfig,
+                         input_image: numpy.ndarray) -> torch.Tensor:
     control_net = state.ddim_v_sampler.model
     height, width, _ = input_image.shape
     tensor_image = src.img_util.numpy2tensor(input_image)
@@ -92,7 +92,7 @@ def generate_first_image(state: global_state.GlobalState, cfg: src.config.Rerend
         x0=x0,
         strength=1 - cfg.x0_strength
     )
-    return state, control_net.decode_first_stage(samples)
+    return control_net.decode_first_stage(samples)
 
 
 def process2(state: global_state.GlobalState, cfg: src.config.RerenderConfig, first_result, first_img):
