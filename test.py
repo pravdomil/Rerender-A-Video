@@ -123,7 +123,7 @@ def process2(cfg: src.config.RerenderConfig, first_result, first_img):
         print(cid)
         frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         img = ControlNet.annotator.util.HWC3(frame)
-        H, W, C = img.shape
+        height, width, _ = img.shape
 
         img_ = src.img_util.numpy2tensor(img)
 
@@ -149,7 +149,7 @@ def process2(cfg: src.config.RerenderConfig, first_result, first_img):
             'c_crossattn':
                 [model.get_learned_conditioning([cfg.n_prompt] * num_samples)]
         }
-        shape = (4, H // 8, W // 8)
+        shape = (4, height // 8, width // 8)
 
         cond['c_concat'] = [control]
         un_cond['c_concat'] = [control]
