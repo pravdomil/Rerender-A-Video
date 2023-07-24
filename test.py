@@ -215,8 +215,7 @@ def generate_next_image(
         xtrg_rec = control_net.get_first_stage_encoding(encoder_posterior).detach()
         xtrg_ = (xtrg + 1 * (xtrg - xtrg_rec))  # * mask
         blend_results_rec_new = control_net.decode_first_stage(xtrg_)
-        tmp = (abs(blend_results_rec_new - blend_results).mean(
-            dim=1, keepdims=True) > 0.25).float()
+        tmp = (abs(blend_results_rec_new - blend_results).mean(dim=1, keepdims=True) > 0.25).float()
         mask_x = functional.max_pool2d(
             (functional.interpolate(tmp, scale_factor=1 / 8., mode='bilinear') > 0).float(),
             kernel_size=3,
