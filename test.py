@@ -311,7 +311,8 @@ def process2():
 
 
 def get_config() -> src.config.RerenderConfig:
-    return src.config.RerenderConfig().create_from_parameters(
+    a = src.config.RerenderConfig()
+    a.create_from_parameters(
         "input.mp4",
         "output.mp4",
         "watercolor painting",
@@ -340,6 +341,7 @@ def get_config() -> src.config.RerenderConfig:
         smooth_boundary=True,
         color_preserve=True,
     )
+    return a
 
 
 def setup_color_correction(image):
