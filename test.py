@@ -19,14 +19,14 @@ import src.video_util
 
 
 def main(cfg: src.config.RerenderConfig):
+    state = get_state(cfg)
+
     # noinspection PyUnresolvedReferences
     import decord
     reader = decord.VideoReader(cfg.input_path)
-    image = reader.next().asnumpy()
 
-    state = get_state(cfg)
-
-    first_image = generate_first_image(state, cfg, image)
+    first_image = reader.next().asnumpy()
+    first_result = generate_first_image(state, cfg, first_image)
 
 
 def get_state(cfg: src.config.RerenderConfig):
