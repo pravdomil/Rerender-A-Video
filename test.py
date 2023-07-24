@@ -133,9 +133,9 @@ def generate_next_image(
 
     height, width, _ = image.shape
 
-    img_ = src.img_util.numpy2tensor(image)
+    tensor_image = src.img_util.numpy2tensor(image)
 
-    encoder_posterior = control_net.encode_first_stage(img_.to(global_state.device))
+    encoder_posterior = control_net.encode_first_stage(tensor_image.to(global_state.device))
     x0 = control_net.get_first_stage_encoding(encoder_posterior).detach()
 
     detected_map = state.detector(image)
