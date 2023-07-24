@@ -61,8 +61,8 @@ def process1():
 
 def generate_first_img(cfg, state, img, strength):
     model = state.ddim_v_sampler.model
-    img_ = src.img_util.numpy2tensor(img)
     height, width, _ = img.shape
+    img_ = src.img_util.numpy2tensor(img)
 
     num_samples = 1
 
