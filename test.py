@@ -177,11 +177,7 @@ def generate_next_image(
     direct_result = control_net.decode_first_stage(samples)
 
     if not cfg.use_mask:
-        pre_result = direct_result
-        pre_img = image
-        viz = (
-                einops.rearrange(direct_result, 'b c h w -> b h w c') * 127.5 +
-                127.5).cpu().numpy().clip(0, 255).astype(numpy.uint8)
+        return direct_result
 
     else:
 
@@ -246,15 +242,10 @@ def generate_next_image(
             strength=1 - cfg.x0_strength,
             xtrg=xtrg,
             mask=masks,
-            noise_rescale=noise_rescale)
-        x_samples = control_net.decode_first_stage(samples)
-        pre_result = x_samples
-        pre_img = image
+            noise_rescale=noise_rescale
+        )
 
-        viz_normalized = einops.rearrange(x_samples, 'b c h w -> b h w c') * 127.5 + 127.5
-        viz = viz_normalized.cpu().numpy().clip(0, 255).astype(numpy.uint8)
-
-    PIL.Image.fromarray(viz[0]).save(os.path.join(cfg.key_dir, f'{cid:04d}.png'))
+        return control_net.decode_first_stage(samples)
 
 
 def get_config(input_, output, prompt) -> src.config.RerenderConfig:
