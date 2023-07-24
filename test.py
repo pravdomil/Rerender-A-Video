@@ -86,8 +86,8 @@ def generate_first_image(cfg: src.config.RerenderConfig, input_image):
         strength=1 - cfg.x0_strength
     )
     samples = control_net.decode_first_stage(samples)
-    smaples_normalized = einops.rearrange(samples, 'b c h w -> b h w c') * 127.5 + 127.5
-    samples_np = smaples_normalized.cpu().numpy().clip(0, 255).astype(numpy.uint8)
+    samples_normalized = einops.rearrange(samples, 'b c h w -> b h w c') * 127.5 + 127.5
+    samples_np = samples_normalized.cpu().numpy().clip(0, 255).astype(numpy.uint8)
     return samples, samples_np
 
 
