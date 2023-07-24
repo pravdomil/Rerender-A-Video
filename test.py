@@ -321,7 +321,7 @@ def get_config() -> src.config.RerenderConfig:
         frame_count=None,
         interval=10,
         crop=(0, 0, 0, 0),
-        sd_model=None,
+        sd_model='Stable Diffusion 1.5',
         a_prompt='',
         n_prompt='',
         ddim_steps=20,
