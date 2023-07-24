@@ -23,7 +23,7 @@ import src.import_util  # noqa: F401
 import src.video_util
 
 
-def process1(cfg: src.config.RerenderConfig):
+def main(cfg: src.config.RerenderConfig):
     # noinspection PyUnresolvedReferences
     import decord
     reader = decord.VideoReader(cfg.input_path)
