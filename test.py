@@ -93,10 +93,10 @@ def generate_first_result(state: global_state.GlobalState, cfg: src.config.Reren
 def generate_next_image(
         state: global_state.GlobalState,
         cfg: src.config.RerenderConfig,
+        first_image,
         first_result,
-        first_img,
-        pre_result,
-        pre_img,
+        previous_image,
+        previous_result,
         i: int,
         image,
 ):
@@ -134,15 +134,15 @@ def generate_next_image(
     cond['c_concat'] = [control]
     un_cond['c_concat'] = [control]
 
-    image1 = torch.from_numpy(pre_img).permute(2, 0, 1).float()
+    image1 = torch.from_numpy(previous_image).permute(2, 0, 1).float()
     image2 = torch.from_numpy(image).permute(2, 0, 1).float()
     warped_pre, bwd_occ_pre, bwd_flow_pre = flow.flow_utils.get_warped_and_mask(
-        state.flow_model, image1, image2, pre_result, False
+        state.flow_model, image1, image2, previous_result, False
     )
     blend_mask_pre = blur(functional.max_pool2d(bwd_occ_pre, kernel_size=9, stride=1, padding=4))
     blend_mask_pre = torch.clamp(blend_mask_pre + bwd_occ_pre, 0, 1)
 
-    image1 = torch.from_numpy(first_img).permute(2, 0, 1).float()
+    image1 = torch.from_numpy(first_image).permute(2, 0, 1).float()
     warped_0, bwd_occ_0, bwd_flow_0 = flow.flow_utils.get_warped_and_mask(
         state.flow_model, image1, image2, first_result, False
     )
