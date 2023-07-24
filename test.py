@@ -44,14 +44,14 @@ def process1(cfg: src.config.RerenderConfig):
 
 
 def generate_first_img(cfg: src.config.RerenderConfig, state: global_state.GlobalState, img, strength):
-    model = state.ddim_v_sampler.model
+    control_net = state.ddim_v_sampler.model
     height, width, _ = img.shape
     tensor_image = src.img_util.numpy2tensor(img)
 
     num_samples = 1
 
-    encoder_posterior = model.encode_first_stage(tensor_image.to(global_state.device))
-    x0 = model.get_first_stage_encoding(encoder_posterior).detach()
+    encoder_posterior = control_net.encode_first_stage(tensor_image.to(global_state.device))
+    x0 = control_net.get_first_stage_encoding(encoder_posterior).detach()
 
     detected_map = state.detector(img)
     detected_map = ControlNet.annotator.util.HWC3(detected_map)
@@ -62,12 +62,12 @@ def generate_first_img(cfg: src.config.RerenderConfig, state: global_state.Globa
     conditioning = {
         'c_concat': [control],
         'c_crossattn': [
-            model.get_learned_conditioning([cfg.prompt + ', ' + cfg.a_prompt] * num_samples)
+            control_net.get_learned_conditioning([cfg.prompt + ', ' + cfg.a_prompt] * num_samples)
         ]
     }
     unconditional_conditioning = {
         'c_concat': [control],
-        'c_crossattn': [model.get_learned_conditioning([cfg.n_prompt] * num_samples)]
+        'c_crossattn': [control_net.get_learned_conditioning([cfg.n_prompt] * num_samples)]
     }
     shape = (4, height // 8, width // 8)
 
@@ -86,7 +86,7 @@ def generate_first_img(cfg: src.config.RerenderConfig, state: global_state.Globa
         x0=x0,
         strength=strength
     )
-    samples = model.decode_first_stage(samples)
+    samples = control_net.decode_first_stage(samples)
     smaples_normalized = einops.rearrange(samples, 'b c h w -> b h w c') * 127.5 + 127.5
     samples_np = smaples_normalized.cpu().numpy().clip(0, 255).astype(numpy.uint8)
     return samples, samples_np
