@@ -16,6 +16,7 @@ import src.config
 import src.img_util
 import src.import_util  # noqa: F401
 import src.video_util
+import moviepy.video.io.ffmpeg_writer
 
 
 def main(cfg: src.config.RerenderConfig):
@@ -30,15 +31,27 @@ def main(cfg: src.config.RerenderConfig):
 
     previous_image = first_image
     previous_result = first_result
-    for i in range(0, 10):
+
+    writer = moviepy.video.io.ffmpeg_writer.FFMPEG_VideoWriter(
+        cfg.output_path,
+        (cfg.image_resolution, cfg.image_resolution),
+        reader.get_avg_fps() / cfg.interval,
+        ffmpeg_params=["-crf", "15", "-metadata", "title=Rerender A Video"],
+    )
+
+    for i in range(0, 16, cfg.interval):
         reader.seek(0)
         image = reader.next()
-        
+
         result = generate_next_image(
             state, cfg, first_image, first_result, previous_image, previous_result, i, image)
 
+        writer.write_frame(torch_to_numpy(image)[0])
+
         previous_image = image
         previous_result = result
+
+    writer.close()
 
 
 def get_state(cfg: src.config.RerenderConfig):
