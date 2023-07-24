@@ -28,6 +28,18 @@ def main(cfg: src.config.RerenderConfig):
     first_image = reader.next().asnumpy()
     first_result = generate_first_result(state, cfg, first_image)
 
+    previous_image = first_image
+    previous_result = first_result
+    for i in range(0, 10):
+        reader.seek(0)
+        image = reader.next()
+        
+        result = generate_next_image(
+            state, cfg, first_image, first_result, previous_image, previous_result, i, image)
+
+        previous_image = image
+        previous_result = result
+
 
 def get_state(cfg: src.config.RerenderConfig):
     state = global_state.GlobalState()
