@@ -360,3 +360,8 @@ def apply_color_correction(correction, original_image):
     image = blendmodes.blend.blendLayers(image, original_image, blendmodes.blend.BlendType.LUMINOSITY)
 
     return image
+
+
+x_samples, x_samples_np = process1()
+# noinspection PyUnresolvedReferences
+display(PIL.Image.fromarray(x_samples_np[0]))
