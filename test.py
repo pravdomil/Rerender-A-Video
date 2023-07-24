@@ -44,11 +44,7 @@ def process1():
     input_image = cv2.cvtColor(input_image, cv2.COLOR_BGR2RGB)
     input_image = ControlNet.annotator.util.HWC3(input_image)
 
-    x_samples, x_samples_np = generate_first_img(cfg, state, input_image, 1 - cfg.x0_strength)
-
-    PIL.Image.fromarray(x_samples_np[0]).save(os.path.join(cfg.first_dir, 'first.jpg'))
-
-    return x_samples, x_samples_np
+    return generate_first_img(cfg, state, input_image, 1 - cfg.x0_strength)
 
 
 def generate_first_img(cfg, state, img, strength):
