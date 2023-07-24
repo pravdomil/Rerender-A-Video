@@ -81,7 +81,7 @@ def generate_first_img(cfg: src.config.RerenderConfig, state: global_state.Globa
         cfg.ddim_steps,
         num_samples,
         shape,
-        conditioning,
+        conditioning=conditioning,
         verbose=False,
         eta=0.0,
         unconditional_guidance_scale=cfg.scale,
