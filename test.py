@@ -22,8 +22,6 @@ import src.img_util
 import src.import_util  # noqa: F401
 import src.video_util
 
-blur = transforms.GaussianBlur(kernel_size=(9, 9), sigma=(18, 18))
-
 
 def process1(cfg: src.config.RerenderConfig):
     state = global_state.GlobalState()
@@ -118,6 +116,8 @@ def process2(cfg: src.config.RerenderConfig):
     first_img = state.first_img
     pre_result = first_result
     pre_img = first_img
+
+    blur = transforms.GaussianBlur(kernel_size=(9, 9), sigma=(18, 18))
 
     for i in range(0, cfg.frame_count - 1, cfg.interval):
         cid = i + 1
