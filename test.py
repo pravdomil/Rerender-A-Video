@@ -278,41 +278,41 @@ def torch_to_numpy(a: torch.Tensor) -> numpy.ndarray:
 
 
 def get_config(input_path, output_path, prompt) -> src.config.RerenderConfig:
-    a = src.config.RerenderConfig()
+    cfg = src.config.RerenderConfig()
 
-    a.input_path = input_path
-    a.output_path = output_path
-    a.prompt = prompt
+    cfg.input_path = input_path
+    cfg.output_path = output_path
+    cfg.prompt = prompt
 
-    a.interval = 1
-    a.frame_count = 16
-    a.crop = (0, 0, 0, 0)
-    a.sd_model = 'Stable Diffusion 1.5'
-    a.a_prompt = ''
-    a.n_prompt = ''
-    a.ddim_steps = 20
-    a.scale = 7.5
-    a.control_type = 'HED'
+    cfg.interval = 1
+    cfg.frame_count = 16
+    cfg.crop = (0, 0, 0, 0)
+    cfg.sd_model = 'Stable Diffusion 1.5'
+    cfg.a_prompt = ''
+    cfg.n_prompt = ''
+    cfg.ddim_steps = 20
+    cfg.scale = 7.5
+    cfg.control_type = 'HED'
 
-    if a.control_type == 'canny':
-        a.canny_low = 100
-        a.canny_high = 200
+    if cfg.control_type == 'canny':
+        cfg.canny_low = 100
+        cfg.canny_high = 200
     else:
-        a.canny_low = None
-        a.canny_high = None
+        cfg.canny_low = None
+        cfg.canny_high = None
 
-    a.control_strength = 1
-    a.seed = 123
-    a.image_resolution = 512
-    a.x0_strength = 1
-    a.style_update_freq = 10
-    a.cross_period = (0, 1)
-    a.mask_period = (0.5, 0.8)
-    a.warp_period = (0, 0.1)
-    a.ada_period = (1.0, 1.0)
-    a.mask_strength = 0.5
-    a.inner_strength = 0.9
-    a.smooth_boundary = True
-    a.color_preserve = True
+    cfg.control_strength = 1
+    cfg.seed = 123
+    cfg.image_resolution = 512
+    cfg.x0_strength = 1
+    cfg.style_update_freq = 10
+    cfg.cross_period = (0, 1)
+    cfg.mask_period = (0.5, 0.8)
+    cfg.warp_period = (0, 0.1)
+    cfg.ada_period = (1.0, 1.0)
+    cfg.mask_strength = 0.5
+    cfg.inner_strength = 0.9
+    cfg.smooth_boundary = True
+    cfg.color_preserve = True
 
-    return a
+    return cfg
