@@ -263,7 +263,6 @@ def process2(cfg: src.config.RerenderConfig, first_result, first_img):
                 shape,
                 cond,
                 verbose=False,
-                eta=eta,
                 unconditional_guidance_scale=cfg.scale,
                 unconditional_conditioning=un_cond,
                 controller=state.controller,
