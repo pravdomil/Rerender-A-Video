@@ -46,11 +46,11 @@ def process1(cfg: src.config.RerenderConfig):
 def generate_first_img(cfg: src.config.RerenderConfig, state: global_state.GlobalState, img, strength):
     model = state.ddim_v_sampler.model
     height, width, _ = img.shape
-    img_ = src.img_util.numpy2tensor(img)
+    tensor_image = src.img_util.numpy2tensor(img)
 
     num_samples = 1
 
-    encoder_posterior = model.encode_first_stage(img_.to(global_state.device))
+    encoder_posterior = model.encode_first_stage(tensor_image.to(global_state.device))
     x0 = model.get_first_stage_encoding(encoder_posterior).detach()
 
     detected_map = state.detector(img)
