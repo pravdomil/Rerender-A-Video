@@ -32,7 +32,8 @@ def main(cfg: src.config.RerenderConfig):
     return generate_first_image(cfg, image)
 
 
-def generate_first_image(cfg: src.config.RerenderConfig, input_image: numpy.ndarray) -> torch.Tensor:
+def generate_first_image(cfg: src.config.RerenderConfig, input_image: numpy.ndarray) -> \
+        (global_state.GlobalState, torch.Tensor):
     state = global_state.GlobalState()
     state.update_sd_model(cfg.sd_model, cfg.control_type)
     state.update_controller(cfg.inner_strength, cfg.mask_period, cfg.cross_period, cfg.ada_period, cfg.warp_period)
@@ -85,7 +86,7 @@ def generate_first_image(cfg: src.config.RerenderConfig, input_image: numpy.ndar
         x0=x0,
         strength=1 - cfg.x0_strength
     )
-    return control_net.decode_first_stage(samples)
+    return state, control_net.decode_first_stage(samples)
 
 
 def process2(state: global_state.GlobalState, cfg: src.config.RerenderConfig, first_result, first_img):
