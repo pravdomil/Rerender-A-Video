@@ -46,7 +46,7 @@ def main(cfg: src.config.RerenderConfig):
         result = generate_next_image(
             cfg, state, first_image, first_result, previous_image, previous_result, i, image)
 
-        writer.write_frame(torch_to_numpy(image)[0])
+        writer.write_frame(torch_to_numpy(result)[0])
 
         previous_image = image
         previous_result = result
