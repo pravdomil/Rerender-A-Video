@@ -188,7 +188,8 @@ def process2(cfg: src.config.RerenderConfig, first_result, first_img):
             unconditional_conditioning=un_cond,
             controller=state.controller,
             x0=x0,
-            strength=1 - cfg.x0_strength)
+            strength=1 - cfg.x0_strength
+        )
         direct_result = model.decode_first_stage(samples)
 
         if not pixelfusion:
