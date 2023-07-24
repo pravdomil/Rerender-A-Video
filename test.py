@@ -293,14 +293,10 @@ def get_config(input_path, output_path, prompt) -> src.config.RerenderConfig:
     cfg.sd_model = 'Stable Diffusion 1.5'
     cfg.ddim_steps = 20
     cfg.scale = 7.5
-    cfg.control_type = 'HED'
 
-    if cfg.control_type == 'canny':
-        cfg.canny_low = 100
-        cfg.canny_high = 200
-    else:
-        cfg.canny_low = None
-        cfg.canny_high = None
+    cfg.control_type = 'HED'
+    cfg.canny_low = 100 if cfg.control_type == 'canny' else None
+    cfg.canny_high = 200 if cfg.control_type == 'canny' else None
 
     cfg.control_strength = 1
     cfg.seed = 123
