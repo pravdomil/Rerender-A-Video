@@ -120,21 +120,18 @@ def generate_next_image(
     detected_map = state.detector.detector(image)
     detected_map = ControlNet.annotator.util.HWC3(detected_map)
 
-    control = torch.from_numpy(
-        detected_map.copy()).float().to(global_state.device) / 255.0
+    control = torch.from_numpy(detected_map.copy()).float().to(global_state.device) / 255.0
     control = torch.stack([control for _ in range(num_samples)], dim=0)
     control = einops.rearrange(control, 'b h w c -> b c h w').clone()
     cond = {
         'c_concat': [control],
         'c_crossattn': [
-            control_net.get_learned_conditioning(
-                [cfg.prompt + ', ' + cfg.a_prompt] * num_samples)
+            control_net.get_learned_conditioning([cfg.prompt + ', ' + cfg.a_prompt] * num_samples)
         ]
     }
     un_cond = {
         'c_concat': [control],
-        'c_crossattn':
-            [control_net.get_learned_conditioning([cfg.n_prompt] * num_samples)]
+        'c_crossattn': [control_net.get_learned_conditioning([cfg.n_prompt] * num_samples)]
     }
     shape = (4, height // 8, width // 8)
 
@@ -144,23 +141,24 @@ def generate_next_image(
     image1 = torch.from_numpy(pre_img).permute(2, 0, 1).float()
     image2 = torch.from_numpy(image).permute(2, 0, 1).float()
     warped_pre, bwd_occ_pre, bwd_flow_pre = flow.flow_utils.get_warped_and_mask(
-        state.flow_model, image1, image2, pre_result, False)
-    blend_mask_pre = blur(
-        functional.max_pool2d(bwd_occ_pre, kernel_size=9, stride=1, padding=4))
+        state.flow_model, image1, image2, pre_result, False
+    )
+    blend_mask_pre = blur(functional.max_pool2d(bwd_occ_pre, kernel_size=9, stride=1, padding=4))
     blend_mask_pre = torch.clamp(blend_mask_pre + bwd_occ_pre, 0, 1)
 
     image1 = torch.from_numpy(first_img).permute(2, 0, 1).float()
     warped_0, bwd_occ_0, bwd_flow_0 = flow.flow_utils.get_warped_and_mask(
-        state.flow_model, image1, image2, first_result, False)
-    blend_mask_0 = blur(
-        functional.max_pool2d(bwd_occ_0, kernel_size=9, stride=1, padding=4))
+        state.flow_model, image1, image2, first_result, False
+    )
+    blend_mask_0 = blur(functional.max_pool2d(bwd_occ_0, kernel_size=9, stride=1, padding=4))
     blend_mask_0 = torch.clamp(blend_mask_0 + bwd_occ_0, 0, 1)
 
     mask = 1 - functional.max_pool2d(blend_mask_0, kernel_size=8)
     state.controller.set_warp(
-        functional.interpolate(bwd_flow_0 / 8.0,
-                               scale_factor=1. / 8,
-                               mode='bilinear'), mask)
+        functional.interpolate(
+            bwd_flow_0 / 8.0,
+            scale_factor=1. / 8,
+            mode='bilinear'), mask)
 
     state.controller.set_task('keepx0, keepstyle')
     accelerate.utils.set_seed(cfg.seed)
