@@ -102,6 +102,7 @@ def generate_next_image(
         first_img,
         pre_result,
         pre_img,
+        i: int,
         image,
 ):
     control_net = state.ddim_v_sampler.model
