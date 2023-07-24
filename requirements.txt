@@ -3,7 +3,6 @@ albumentations~=1.3.0
 basicsr~=1.4.2
 blendmodes
 einops==0.6.1
-gradio~=3.33.1
 imageio~=2.9.0
 imageio-ffmpeg~=0.4.2
 invisible-watermark~=0.1.5
