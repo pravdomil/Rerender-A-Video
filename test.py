@@ -26,7 +26,7 @@ def main(cfg: src.config.RerenderConfig):
     reader = decord.VideoReader(cfg.input_path)
 
     first_image = reader.next().asnumpy()
-    first_result = generate_first_image(state, cfg, first_image)
+    first_result = generate_first_result(state, cfg, first_image)
 
 
 def get_state(cfg: src.config.RerenderConfig):
@@ -43,8 +43,8 @@ def get_state(cfg: src.config.RerenderConfig):
     return state
 
 
-def generate_first_image(state: global_state.GlobalState, cfg: src.config.RerenderConfig,
-                         input_image: numpy.ndarray) -> torch.Tensor:
+def generate_first_result(state: global_state.GlobalState, cfg: src.config.RerenderConfig,
+                          input_image: numpy.ndarray) -> torch.Tensor:
     control_net = state.ddim_v_sampler.model
     height, width, _ = input_image.shape
     tensor_image = src.img_util.numpy2tensor(input_image)
