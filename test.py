@@ -69,7 +69,7 @@ def generate_first_img(cfg: src.config.RerenderConfig, state: global_state.Globa
                 [cfg.prompt + ', ' + cfg.a_prompt] * num_samples)
         ]
     }
-    un_cond = {
+    unconditional_conditioning = {
         'c_concat': [control],
         'c_crossattn':
             [model.get_learned_conditioning([cfg.n_prompt] * num_samples)]
@@ -87,7 +87,7 @@ def generate_first_img(cfg: src.config.RerenderConfig, state: global_state.Globa
         verbose=False,
         eta=0.0,
         unconditional_guidance_scale=cfg.scale,
-        unconditional_conditioning=un_cond,
+        unconditional_conditioning=unconditional_conditioning,
         controller=state.controller,
         x0=x0,
         strength=strength
