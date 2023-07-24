@@ -46,12 +46,9 @@ def process1():
 
     x_samples, x_samples_np = generate_first_img(cfg, state, input_image, 1 - cfg.x0_strength)
 
-    state.first_result = x_samples
-    state.first_img = input_image
-
     PIL.Image.fromarray(x_samples_np[0]).save(os.path.join(cfg.first_dir, 'first.jpg'))
 
-    return x_samples_np[0]
+    return x_samples, x_samples_np
 
 
 def generate_first_img(cfg, state, img, strength):
