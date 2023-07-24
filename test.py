@@ -24,6 +24,15 @@ import src.video_util
 
 
 def process1(cfg: src.config.RerenderConfig):
+    # noinspection PyUnresolvedReferences
+    import decord
+    reader = decord.VideoReader(cfg.input_path)
+    input_image = reader.next().asnumpy()
+
+    return generate_first_img(cfg, input_image)
+
+
+def generate_first_img(cfg: src.config.RerenderConfig, input_image):
     state = global_state.GlobalState()
     state.update_sd_model(cfg.sd_model, cfg.control_type)
     state.update_controller(cfg.inner_strength, cfg.mask_period, cfg.cross_period, cfg.ada_period, cfg.warp_period)
@@ -35,16 +44,6 @@ def process1(cfg: src.config.RerenderConfig):
     control_net.cond_stage_model.device = global_state.device
     control_net.to(global_state.device)
 
-    # noinspection PyUnresolvedReferences
-    import decord
-    reader = decord.VideoReader(cfg.input_path)
-    input_image = reader.next().asnumpy()
-
-    return generate_first_img(cfg, state, input_image)
-
-
-def generate_first_img(cfg: src.config.RerenderConfig, state: global_state.GlobalState, input_image):
-    control_net = state.ddim_v_sampler.model
     height, width, _ = input_image.shape
     tensor_image = src.img_util.numpy2tensor(input_image)
 
