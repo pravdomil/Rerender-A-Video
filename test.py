@@ -35,10 +35,10 @@ def process1():
     state.update_detector(cfg.control_type, cfg.canny_low, cfg.canny_high)
     state.processing_state = global_state.ProcessingState.FIRST_IMG
 
-    model = state.ddim_v_sampler.model
-    model.control_scales = [cfg.control_strength] * 13
-    model.cond_stage_model.device = global_state.device
-    model.to(global_state.device)
+    control_net = state.ddim_v_sampler.model
+    control_net.control_scales = [cfg.control_strength] * 13
+    control_net.cond_stage_model.device = global_state.device
+    control_net.to(global_state.device)
 
     input_image = cv2.imread(cfg.input_path)
     input_image = cv2.cvtColor(input_image, cv2.COLOR_BGR2RGB)
