@@ -44,7 +44,7 @@ def main(cfg: src.config.RerenderConfig):
         image = reader.next().asnumpy()
 
         result = generate_next_image(
-            state, cfg, first_image, first_result, previous_image, previous_result, i, image)
+            cfg, state, first_image, first_result, previous_image, previous_result, i, image)
 
         writer.write_frame(torch_to_numpy(image)[0])
 
@@ -116,8 +116,8 @@ def generate_first_result(state: global_state.GlobalState, cfg: src.config.Reren
 
 
 def generate_next_image(
-        state: global_state.GlobalState,
         cfg: src.config.RerenderConfig,
+        state: global_state.GlobalState,
         first_image: numpy.ndarray,
         first_result: torch.Tensor,
         previous_image: numpy.ndarray,
