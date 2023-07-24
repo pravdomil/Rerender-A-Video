@@ -185,36 +185,29 @@ def generate_next_image(
 
     else:
 
-        blend_results = (1 - blend_mask_pre
-                         ) * warped_pre + blend_mask_pre * direct_result
-        blend_results = (
-                                1 - blend_mask_0) * warped_0 + blend_mask_0 * blend_results
+        blend_results = (1 - blend_mask_pre) * warped_pre + blend_mask_pre * direct_result
+        blend_results = (1 - blend_mask_0) * warped_0 + blend_mask_0 * blend_results
 
         bwd_occ = 1 - torch.clamp(1 - bwd_occ_pre + 1 - bwd_occ_0, 0, 1)
-        blend_mask = blur(
-            functional.max_pool2d(bwd_occ, kernel_size=9, stride=1, padding=4))
+        blend_mask = blur(functional.max_pool2d(bwd_occ, kernel_size=9, stride=1, padding=4))
         blend_mask = 1 - torch.clamp(blend_mask + bwd_occ, 0, 1)
 
         encoder_posterior = control_net.encode_first_stage(blend_results)
-        xtrg = control_net.get_first_stage_encoding(
-            encoder_posterior).detach()  # * mask
+        xtrg = control_net.get_first_stage_encoding(encoder_posterior).detach()  # * mask
         blend_results_rec = control_net.decode_first_stage(xtrg)
         encoder_posterior = control_net.encode_first_stage(blend_results_rec)
-        xtrg_rec = control_net.get_first_stage_encoding(
-            encoder_posterior).detach()
+        xtrg_rec = control_net.get_first_stage_encoding(encoder_posterior).detach()
         xtrg_ = (xtrg + 1 * (xtrg - xtrg_rec))  # * mask
         blend_results_rec_new = control_net.decode_first_stage(xtrg_)
         tmp = (abs(blend_results_rec_new - blend_results).mean(
             dim=1, keepdims=True) > 0.25).float()
-        mask_x = functional.max_pool2d((functional.interpolate(tmp,
-                                                               scale_factor=1 / 8.,
-                                                               mode='bilinear') > 0).float(),
-                                       kernel_size=3,
-                                       stride=1,
-                                       padding=1)
+        mask_x = functional.max_pool2d(
+            (functional.interpolate(tmp, scale_factor=1 / 8., mode='bilinear') > 0).float(),
+            kernel_size=3,
+            stride=1,
+            padding=1)
 
-        mask = (1 - functional.max_pool2d(1 - blend_mask, kernel_size=8)
-                )  # * (1-mask_x)
+        mask = (1 - functional.max_pool2d(1 - blend_mask, kernel_size=8))  # * (1-mask_x)
 
         if cfg.smooth_boundary:
             noise_rescale = src.img_util.find_flat_region(mask)
