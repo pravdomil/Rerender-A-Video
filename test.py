@@ -283,13 +283,13 @@ def get_config(input_path, output_path, prompt) -> src.config.RerenderConfig:
     cfg.input_path = input_path
     cfg.output_path = output_path
     cfg.prompt = prompt
+    cfg.a_prompt = ''
+    cfg.n_prompt = ''
 
     cfg.interval = 1
     cfg.frame_count = 16
     cfg.crop = (0, 0, 0, 0)
     cfg.sd_model = 'Stable Diffusion 1.5'
-    cfg.a_prompt = ''
-    cfg.n_prompt = ''
     cfg.ddim_steps = 20
     cfg.scale = 7.5
     cfg.control_type = 'HED'
