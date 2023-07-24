@@ -124,7 +124,7 @@ def generate_next_image(
         previous_result: torch.Tensor,
         i: int,
         image: numpy.ndarray,
-):
+) -> torch.Tensor:
     control_net = state.ddim_v_sampler.model
 
     num_samples = 1
