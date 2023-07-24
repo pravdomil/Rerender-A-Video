@@ -2,13 +2,12 @@ import os
 import shutil
 
 import PIL.Image
+import accelerate.utils
 # noinspection PyUnresolvedReferences
 import blendmodes.blend
 import cv2
 import einops
 import numpy
-# noinspection PyUnresolvedReferences
-import pytorch_lightning
 import skimage
 # noinspection PyUnresolvedReferences
 import torch
@@ -78,7 +77,7 @@ def generate_first_img(cfg, state, img, strength):
     shape = (4, height // 8, width // 8)
 
     state.controller.set_task('initfirst')
-    pytorch_lightning.seed_everything(cfg.seed)
+    accelerate.utils.set_seed(cfg.seed)
 
     samples, _ = state.ddim_v_sampler.sample(
         cfg.ddim_steps,
@@ -196,7 +195,7 @@ def process2():
                                        mode='bilinear'), mask)
 
         state.controller.set_task('keepx0, keepstyle')
-        pytorch_lightning.seed_everything(cfg.seed)
+        accelerate.utils.set_seed(cfg.seed)
         samples, intermediates = state.ddim_v_sampler.sample(
             cfg.ddim_steps,
             num_samples,
@@ -277,7 +276,7 @@ def process2():
                 tasks += ', updatestyle'
             state.controller.set_task(tasks, 1.0)
 
-            pytorch_lightning.seed_everything(cfg.seed)
+            accelerate.utils.set_seed(cfg.seed)
             samples, _ = state.ddim_v_sampler.sample(
                 cfg.ddim_steps,
                 num_samples,
