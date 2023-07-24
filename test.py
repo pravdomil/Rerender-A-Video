@@ -8,8 +8,6 @@ import blendmodes.blend
 import cv2
 import einops
 import numpy
-import skimage
-# noinspection PyUnresolvedReferences
 import torch
 import torch.nn.functional as functional
 import torchvision.transforms as transforms
@@ -125,12 +123,8 @@ def process2(cfg: src.config.RerenderConfig, first_result, first_img):
         img = ControlNet.annotator.util.HWC3(frame)
         H, W, C = img.shape
 
-        if cfg.color_preserve or state.color_corrections is None:
-            img_ = src.img_util.numpy2tensor(img)
-        else:
-            img_ = apply_color_correction(state.color_corrections,
-                                          PIL.Image.fromarray(img))
-            img_ = transforms.PILToTensor()(img_).unsqueeze(0)[:, :3] / 127.5 - 1
+        img_ = src.img_util.numpy2tensor(img)
+
         encoder_posterior = model.encode_first_stage(img_.to(global_state.device))
         x0 = model.get_first_stage_encoding(encoder_posterior).detach()
 
@@ -334,22 +328,3 @@ def get_config(input, output, prompt) -> src.config.RerenderConfig:
         color_preserve=True,
     )
     return a
-
-
-def setup_color_correction(image):
-    correction_target = cv2.cvtColor(numpy.asarray(image.copy()), cv2.COLOR_RGB2LAB)
-    return correction_target
-
-
-def apply_color_correction(correction, original_image):
-    image = PIL.Image.fromarray(
-        cv2.cvtColor(
-            skimage.exposure.match_histograms(
-                cv2.cvtColor(numpy.asarray(original_image), cv2.COLOR_RGB2LAB),
-                correction,
-                channel_axis=2),
-            cv2.COLOR_LAB2RGB).astype('uint8'))
-
-    image = blendmodes.blend.blendLayers(image, original_image, blendmodes.blend.BlendType.LUMINOSITY)
-
-    return image
