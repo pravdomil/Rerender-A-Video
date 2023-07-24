@@ -47,7 +47,7 @@ def main(cfg: src.config.RerenderConfig):
         image = reader.next().asnumpy()
 
         result = generate_next_image(
-            cfg, state, first_image, first_result, previous_image, previous_result, index, image)
+            cfg, state, first_image, first_result, previous_image, previous_result, i, image)
 
         writer.write_frame(torch_to_numpy(result)[0])
 
