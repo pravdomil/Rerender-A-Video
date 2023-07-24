@@ -4,6 +4,7 @@ import accelerate.utils
 import blendmodes.blend
 # noinspection PyPackageRequirements
 import einops
+import moviepy.video.io.ffmpeg_writer
 import numpy
 import torch
 import torch.nn.functional as functional
@@ -16,7 +17,6 @@ import src.config
 import src.img_util
 import src.import_util  # noqa: F401
 import src.video_util
-import moviepy.video.io.ffmpeg_writer
 
 
 def main(cfg: src.config.RerenderConfig):
