@@ -283,7 +283,7 @@ def get_config(input_, output, prompt) -> src.config.RerenderConfig:
         work_dir=None,
         key_subdir='keys',
         frame_count=None,
-        interval=10,
+        interval=1,
         crop=(0, 0, 0, 0),
         sd_model='Stable Diffusion 1.5',
         a_prompt='',
