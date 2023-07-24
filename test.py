@@ -40,14 +40,14 @@ def main(cfg: src.config.RerenderConfig):
     )
 
     frame_indexes = range(0, cfg.frame_count, cfg.interval)
-    for i in frame_indexes:
+    for i, index in enumerate(frame_indexes):
         print(str(round(i / len(frame_indexes) * 100)) + "%")
 
-        reader.seek(i)
+        reader.seek(index)
         image = reader.next().asnumpy()
 
         result = generate_next_image(
-            cfg, state, first_image, first_result, previous_image, previous_result, i, image)
+            cfg, state, first_image, first_result, previous_image, previous_result, index, image)
 
         writer.write_frame(torch_to_numpy(result)[0])
 
