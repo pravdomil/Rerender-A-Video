@@ -39,7 +39,7 @@ def main(cfg: src.config.RerenderConfig):
         ffmpeg_params=["-crf", "15", "-metadata", "title=Rerender A Video\n" + cfg.prompt],
     )
 
-    frame_indexes = range(0, 16, cfg.interval)
+    frame_indexes = range(0, cfg.frame_count, cfg.interval)
     for i in frame_indexes:
         print(str(round(i / len(frame_indexes) * 100)) + "%")
 
@@ -285,6 +285,7 @@ def get_config(input_path, output_path, prompt) -> src.config.RerenderConfig:
     a.prompt = prompt
 
     a.interval = 1
+    a.frame_count = 16
     a.crop = (0, 0, 0, 0)
     a.sd_model = 'Stable Diffusion 1.5'
     a.a_prompt = ''
