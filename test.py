@@ -224,8 +224,10 @@ def generate_next_image(
         xtrg = (xtrg + (1 - mask_x) * (xtrg - xtrg_rec)) * mask  # mask 1
 
         tasks = 'keepstyle, keepx0'
+
         if i % cfg.style_update_freq == 0:
             tasks += ', updatestyle'
+
         state.controller.set_task(tasks, 1.0)
 
         accelerate.utils.set_seed(cfg.seed)
