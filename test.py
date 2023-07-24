@@ -316,7 +316,7 @@ def get_config(input_, output, prompt) -> src.config.RerenderConfig:
         control_strength=1,
         seed=123,
         image_resolution=512,
-        x0_strength=-1,
+        x0_strength=1,
         style_update_freq=10,
         cross_period=(0, 1),
         warp_period=(0, 0.1),
