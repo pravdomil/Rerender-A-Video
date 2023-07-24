@@ -277,35 +277,41 @@ def torch_to_numpy(a: torch.Tensor) -> numpy.ndarray:
     return samples_normalized.cpu().numpy().clip(0, 255).astype(numpy.uint8)
 
 
-def get_config(input_, output, prompt) -> src.config.RerenderConfig:
+def get_config(input_path, output_path, prompt) -> src.config.RerenderConfig:
     a = src.config.RerenderConfig()
-    a.create_from_parameters(
-        input_,
-        output,
-        prompt,
-        work_dir=None,
-        key_subdir='keys',
-        frame_count=None,
-        interval=1,
-        crop=(0, 0, 0, 0),
-        sd_model='Stable Diffusion 1.5',
-        a_prompt='',
-        n_prompt='',
-        ddim_steps=20,
-        scale=7.5,
-        control_type='HED',
-        control_strength=1,
-        seed=123,
-        image_resolution=512,
-        x0_strength=1,
-        style_update_freq=10,
-        cross_period=(0, 1),
-        warp_period=(0, 0.1),
-        mask_period=(0.5, 0.8),
-        ada_period=(1.0, 1.0),
-        mask_strength=0.5,
-        inner_strength=0.9,
-        smooth_boundary=True,
-        color_preserve=True,
-    )
+
+    a.input_path = input_path
+    a.output_path = output_path
+    a.prompt = prompt
+
+    a.interval = 1
+    a.crop = (0, 0, 0, 0)
+    a.sd_model = 'Stable Diffusion 1.5'
+    a.a_prompt = ''
+    a.n_prompt = ''
+    a.ddim_steps = 20
+    a.scale = 7.5
+    a.control_type = 'HED'
+
+    if a.control_type == 'canny':
+        a.canny_low = 100
+        a.canny_high = 200
+    else:
+        a.canny_low = None
+        a.canny_high = None
+
+    a.control_strength = 1
+    a.seed = 123
+    a.image_resolution = 512
+    a.x0_strength = 1
+    a.style_update_freq = 10
+    a.cross_period = (0, 1)
+    a.mask_period = (0.5, 0.8)
+    a.warp_period = (0, 0.1)
+    a.ada_period = (1.0, 1.0)
+    a.mask_strength = 0.5
+    a.inner_strength = 0.9
+    a.smooth_boundary = True
+    a.color_preserve = True
+
     return a
