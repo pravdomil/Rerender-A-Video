@@ -276,8 +276,8 @@ def process2(cfg: src.config.RerenderConfig, first_result, first_img):
             pre_result = x_samples
             pre_img = img
 
-            viz = (einops.rearrange(x_samples, 'b c h w -> b h w c') * 127.5 +
-                   127.5).cpu().numpy().clip(0, 255).astype(numpy.uint8)
+            viz_normalized = einops.rearrange(x_samples, 'b c h w -> b h w c') * 127.5 + 127.5
+            viz = viz_normalized.cpu().numpy().clip(0, 255).astype(numpy.uint8)
 
         PIL.Image.fromarray(viz[0]).save(
             os.path.join(cfg.key_dir, f'{cid:04d}.png'))
