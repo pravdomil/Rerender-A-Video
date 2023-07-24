@@ -43,7 +43,6 @@ def process1():
     input_image = cv2.imread(cfg.input_path)
     input_image = cv2.cvtColor(input_image, cv2.COLOR_BGR2RGB)
     input_image = ControlNet.annotator.util.HWC3(input_image)
-    height, width, _ = input_image.shape
 
     x_samples, x_samples_np = generate_first_img(
         cfg,
@@ -63,6 +62,7 @@ def process1():
 def generate_first_img(cfg, state, img, strength):
     model = state.ddim_v_sampler.model
     img_ = src.img_util.numpy2tensor(img)
+    height, width, _ = img.shape
 
     num_samples = 1
 
