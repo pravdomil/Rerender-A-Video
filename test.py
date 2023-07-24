@@ -97,8 +97,8 @@ def process2(cfg: src.config.RerenderConfig, first_result, first_img):
     state.update_detector(cfg.control_type, cfg.canny_low, cfg.canny_high)
     state.processing_state = global_state.ProcessingState.KEY_IMGS
 
-    model = state.ddim_v_sampler.model
-    model.control_scales = [cfg.control_strength] * 13
+    control_net = state.ddim_v_sampler.model
+    control_net.control_scales = [cfg.control_strength] * 13
 
     num_samples = 1
     firstx0 = True
@@ -121,8 +121,8 @@ def process2(cfg: src.config.RerenderConfig, first_result, first_img):
 
         img_ = src.img_util.numpy2tensor(img)
 
-        encoder_posterior = model.encode_first_stage(img_.to(global_state.device))
-        x0 = model.get_first_stage_encoding(encoder_posterior).detach()
+        encoder_posterior = control_net.encode_first_stage(img_.to(global_state.device))
+        x0 = control_net.get_first_stage_encoding(encoder_posterior).detach()
 
         detected_map = state.detector.detector(img)
         detected_map = ControlNet.annotator.util.HWC3(detected_map)
@@ -134,14 +134,14 @@ def process2(cfg: src.config.RerenderConfig, first_result, first_img):
         cond = {
             'c_concat': [control],
             'c_crossattn': [
-                model.get_learned_conditioning(
+                control_net.get_learned_conditioning(
                     [cfg.prompt + ', ' + cfg.a_prompt] * num_samples)
             ]
         }
         un_cond = {
             'c_concat': [control],
             'c_crossattn':
-                [model.get_learned_conditioning([cfg.n_prompt] * num_samples)]
+                [control_net.get_learned_conditioning([cfg.n_prompt] * num_samples)]
         }
         shape = (4, height // 8, width // 8)
 
@@ -190,7 +190,7 @@ def process2(cfg: src.config.RerenderConfig, first_result, first_img):
             x0=x0,
             strength=1 - cfg.x0_strength
         )
-        direct_result = model.decode_first_stage(samples)
+        direct_result = control_net.decode_first_stage(samples)
 
         if not pixelfusion:
             pre_result = direct_result
@@ -211,15 +211,15 @@ def process2(cfg: src.config.RerenderConfig, first_result, first_img):
                 functional.max_pool2d(bwd_occ, kernel_size=9, stride=1, padding=4))
             blend_mask = 1 - torch.clamp(blend_mask + bwd_occ, 0, 1)
 
-            encoder_posterior = model.encode_first_stage(blend_results)
-            xtrg = model.get_first_stage_encoding(
+            encoder_posterior = control_net.encode_first_stage(blend_results)
+            xtrg = control_net.get_first_stage_encoding(
                 encoder_posterior).detach()  # * mask
-            blend_results_rec = model.decode_first_stage(xtrg)
-            encoder_posterior = model.encode_first_stage(blend_results_rec)
-            xtrg_rec = model.get_first_stage_encoding(
+            blend_results_rec = control_net.decode_first_stage(xtrg)
+            encoder_posterior = control_net.encode_first_stage(blend_results_rec)
+            xtrg_rec = control_net.get_first_stage_encoding(
                 encoder_posterior).detach()
             xtrg_ = (xtrg + 1 * (xtrg - xtrg_rec))  # * mask
-            blend_results_rec_new = model.decode_first_stage(xtrg_)
+            blend_results_rec_new = control_net.decode_first_stage(xtrg_)
             tmp = (abs(blend_results_rec_new - blend_results).mean(
                 dim=1, keepdims=True) > 0.25).float()
             mask_x = functional.max_pool2d((functional.interpolate(tmp,
@@ -272,7 +272,7 @@ def process2(cfg: src.config.RerenderConfig, first_result, first_img):
                 xtrg=xtrg,
                 mask=masks,
                 noise_rescale=noise_rescale)
-            x_samples = model.decode_first_stage(samples)
+            x_samples = control_net.decode_first_stage(samples)
             pre_result = x_samples
             pre_img = img
 
