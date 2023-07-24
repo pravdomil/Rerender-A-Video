@@ -298,10 +298,10 @@ def process2(cfg: src.config.RerenderConfig, first_result, first_img):
     return key_video_path
 
 
-def get_config(input, output, prompt) -> src.config.RerenderConfig:
+def get_config(input_, output, prompt) -> src.config.RerenderConfig:
     a = src.config.RerenderConfig()
     a.create_from_parameters(
-        input,
+        input_,
         output,
         prompt,
         work_dir=None,
