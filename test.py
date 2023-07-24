@@ -99,7 +99,6 @@ def generate_next_image(state: global_state.GlobalState, cfg: src.config.Rerende
     control_net = state.ddim_v_sampler.model
 
     num_samples = 1
-    pixelfusion = cfg.use_mask
     imgs = sorted(os.listdir(cfg.input_dir))
     imgs = [os.path.join(cfg.input_dir, img) for img in imgs]
 
@@ -182,7 +181,7 @@ def generate_next_image(state: global_state.GlobalState, cfg: src.config.Rerende
         )
         direct_result = control_net.decode_first_stage(samples)
 
-        if not pixelfusion:
+        if not cfg.use_mask:
             pre_result = direct_result
             pre_img = img
             viz = (
