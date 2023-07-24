@@ -151,10 +151,9 @@ def generate_next_image(
 
     mask = 1 - functional.max_pool2d(blend_mask_0, kernel_size=8)
     state.controller.set_warp(
-        functional.interpolate(
-            bwd_flow_0 / 8.0,
-            scale_factor=1. / 8,
-            mode='bilinear'), mask)
+        functional.interpolate(bwd_flow_0 / 8.0, scale_factor=1. / 8, mode='bilinear'),
+        mask
+    )
 
     state.controller.set_task('keepx0, keepstyle')
     accelerate.utils.set_seed(cfg.seed)
