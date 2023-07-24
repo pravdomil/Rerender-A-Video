@@ -29,11 +29,12 @@ def main(cfg: src.config.RerenderConfig):
     reader = decord.VideoReader(cfg.input_path)
     image = reader.next().asnumpy()
 
-    return generate_first_image(cfg, image)
+    state = get_state(cfg)
+
+    return generate_first_image(state, cfg, image)
 
 
-def generate_first_image(cfg: src.config.RerenderConfig, input_image: numpy.ndarray) -> \
-        (global_state.GlobalState, torch.Tensor):
+def get_state(cfg: src.config.RerenderConfig):
     state = global_state.GlobalState()
     state.update_sd_model(cfg.sd_model, cfg.control_type)
     state.update_controller(cfg.inner_strength, cfg.mask_period, cfg.cross_period, cfg.ada_period, cfg.warp_period)
@@ -44,7 +45,12 @@ def generate_first_image(cfg: src.config.RerenderConfig, input_image: numpy.ndar
     control_net.control_scales = [cfg.control_strength] * 13
     control_net.cond_stage_model.device = global_state.device
     control_net.to(global_state.device)
+    return state
 
+
+def generate_first_image(state: global_state.GlobalState, cfg: src.config.RerenderConfig, input_image: numpy.ndarray) \
+        -> (global_state.GlobalState, torch.Tensor):
+    control_net = state.ddim_v_sampler.model
     height, width, _ = input_image.shape
     tensor_image = src.img_util.numpy2tensor(input_image)
 
