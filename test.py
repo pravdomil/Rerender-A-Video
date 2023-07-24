@@ -40,10 +40,10 @@ def process1(cfg: src.config.RerenderConfig):
     reader = decord.VideoReader(cfg.input_path)
     input_image = reader.next().asnumpy()
 
-    return generate_first_img(cfg, state, input_image, 1 - cfg.x0_strength)
+    return generate_first_img(cfg, state, input_image)
 
 
-def generate_first_img(cfg: src.config.RerenderConfig, state: global_state.GlobalState, img, strength):
+def generate_first_img(cfg: src.config.RerenderConfig, state: global_state.GlobalState, img):
     control_net = state.ddim_v_sampler.model
     height, width, _ = img.shape
     tensor_image = src.img_util.numpy2tensor(img)
@@ -84,7 +84,7 @@ def generate_first_img(cfg: src.config.RerenderConfig, state: global_state.Globa
         unconditional_conditioning=unconditional_conditioning,
         controller=state.controller,
         x0=x0,
-        strength=strength
+        strength=1 - cfg.x0_strength
     )
     samples = control_net.decode_first_stage(samples)
     smaples_normalized = einops.rearrange(samples, 'b c h w -> b h w c') * 127.5 + 127.5
