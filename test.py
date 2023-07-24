@@ -89,10 +89,10 @@ def generate_first_img(cfg: src.config.RerenderConfig, state: global_state.Globa
         x0=x0,
         strength=strength
     )
-    x_samples = model.decode_first_stage(samples)
-    x_smaples_normalized = einops.rearrange(x_samples, 'b c h w -> b h w c') * 127.5 + 127.5
-    x_samples_np = x_smaples_normalized.cpu().numpy().clip(0, 255).astype(numpy.uint8)
-    return x_samples, x_samples_np
+    samples = model.decode_first_stage(samples)
+    smaples_normalized = einops.rearrange(samples, 'b c h w -> b h w c') * 127.5 + 127.5
+    samples_np = smaples_normalized.cpu().numpy().clip(0, 255).astype(numpy.uint8)
+    return samples, samples_np
 
 
 def process2():
