@@ -92,7 +92,7 @@ def generate_first_img(cfg: src.config.RerenderConfig, state: global_state.Globa
     return samples, samples_np
 
 
-def process2(cfg: src.config.RerenderConfig):
+def process2(cfg: src.config.RerenderConfig, first_result, first_img):
     state = global_state.GlobalState()
     state.update_sd_model(cfg.sd_model, cfg.control_type)
     state.update_detector(cfg.control_type, cfg.canny_low, cfg.canny_high)
@@ -112,8 +112,6 @@ def process2(cfg: src.config.RerenderConfig):
     imgs = sorted(os.listdir(cfg.input_dir))
     imgs = [os.path.join(cfg.input_dir, img) for img in imgs]
 
-    first_result = state.first_result
-    first_img = state.first_img
     pre_result = first_result
     pre_img = first_img
 
