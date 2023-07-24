@@ -97,10 +97,6 @@ def process2(cfg: src.config.RerenderConfig, first_result, first_img):
     state.update_detector(cfg.control_type, cfg.canny_low, cfg.canny_high)
     state.processing_state = global_state.ProcessingState.KEY_IMGS
 
-    # reset key dir
-    shutil.rmtree(cfg.key_dir)
-    os.makedirs(cfg.key_dir, exist_ok=True)
-
     model = state.ddim_v_sampler.model
     model.control_scales = [cfg.control_strength] * 13
 
