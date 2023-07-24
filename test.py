@@ -41,7 +41,7 @@ def main(cfg: src.config.RerenderConfig):
 
     for i in range(0, 16, cfg.interval):
         reader.seek(0)
-        image = reader.next()
+        image = reader.next().asnumpy()
 
         result = generate_next_image(
             state, cfg, first_image, first_result, previous_image, previous_result, i, image)
