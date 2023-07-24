@@ -27,9 +27,9 @@ def process1(cfg: src.config.RerenderConfig):
     # noinspection PyUnresolvedReferences
     import decord
     reader = decord.VideoReader(cfg.input_path)
-    input_image = reader.next().asnumpy()
+    image = reader.next().asnumpy()
 
-    return generate_first_img(cfg, input_image)
+    return generate_first_img(cfg, image)
 
 
 def generate_first_img(cfg: src.config.RerenderConfig, input_image):
