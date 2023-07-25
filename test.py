@@ -356,7 +356,7 @@ def get_config(input_path, output_path, prompt) -> Config:
         mask_strength=0.5,  # pixel fusion strength
         inner_strength=0.9,  # pixel fusion detail level - low value prevents artifacts
 
-        ada_period=(1.0, 1.0),  # color fusion - start/end at step
+        ada_period=(0.0, 1.0),  # color fusion - start/end at step
 
         smooth_boundary=True,
 
