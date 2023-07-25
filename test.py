@@ -309,8 +309,8 @@ def get_config(input_path, output_path, prompt) -> src.config.RerenderConfig:
     cfg.warp_period = (0, 0.1)  # shape fusion - percent of steps
 
     cfg.mask_period = (0.5, 0.8)  # pixel fusion - percent of steps
-    cfg.inner_strength = 0.9  # pixel fusion detail level - low value prevents artifacts
     cfg.mask_strength = 0.5  # pixel fusion strength
+    cfg.inner_strength = 0.9  # pixel fusion detail level - low value prevents artifacts
 
     cfg.ada_period = (1.0, 1.0)  # color fusion - percent of steps
 
