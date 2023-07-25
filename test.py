@@ -42,7 +42,7 @@ class Config:
     denoising_strength: float
     seed: int
 
-    control_net_type: str
+    control_net: str
     control_net_strength: float
     control_net_canny_low: float
     control_net_canny_high: float
@@ -114,10 +114,10 @@ def main(cfg: Config):
 
 def get_state(cfg: Config):
     state = global_state.GlobalState()
-    state.update_sd_model(cfg.model_name, cfg.control_net_type)
+    state.update_sd_model(cfg.model_name, cfg.control_net)
     state.update_controller(cfg.mask_detail_inner_strength, cfg.mask_period, cfg.cross_attention_period,
                             cfg.ada_color_fusion_period, cfg.warp_period)
-    state.update_detector(cfg.control_net_type, cfg.control_net_canny_low, cfg.control_net_canny_high)
+    state.update_detector(cfg.control_net, cfg.control_net_canny_low, cfg.control_net_canny_high)
     state.processing_state = global_state.ProcessingState.FIRST_IMG
 
     control_net = state.ddim_v_sampler.model
@@ -353,7 +353,7 @@ def get_config(input_path, output_path, prompt) -> Config:
         denoising_strength=1,
         seed=123,
 
-        control_net_type='HED',
+        control_net='HED',
         control_net_strength=1,
         control_net_canny_low=100,
         control_net_canny_high=200,
