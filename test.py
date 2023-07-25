@@ -26,13 +26,15 @@ import src.video_util
 class Config:
     input_path: str
     output_path: str
+
     prompt: str
+    a_prompt: str
+    n_prompt: str
+
     frame_count: int
     interval: int
     crop: tuple[int, int, int, int]
     sd_model: str
-    a_prompt: str
-    n_prompt: str
     ddim_steps: int
     scale: float
     control_type: str
