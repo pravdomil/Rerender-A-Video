@@ -1,3 +1,5 @@
+import dataclasses
+
 # noinspection PyPackageRequirements
 import accelerate.utils
 # noinspection PyUnresolvedReferences
@@ -18,6 +20,35 @@ import src.config
 import src.img_util
 import src.import_util  # noqa: F401
 import src.video_util
+
+
+@dataclasses.dataclass
+class Config:
+    input_path: str
+    output_path: str
+    prompt: str
+    frame_count: int
+    interval: int
+    crop: (int, int, int, int)
+    sd_model: str
+    a_prompt: str
+    n_prompt: str
+    ddim_steps: int
+    scale: float
+    control_type: str
+    control_strength: float
+    seed: int
+    image_resolution: int
+    x0_strength: float
+    style_update_freq: int
+    cross_period: (float, float)
+    warp_period: (float, float)
+    mask_period: (float, float)
+    ada_period: (float, float)
+    mask_strength: float
+    inner_strength: float
+    smooth_boundary: bool
+    color_preserve: bool
 
 
 def main(cfg: src.config.RerenderConfig):
