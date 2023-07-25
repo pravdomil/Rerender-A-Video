@@ -38,10 +38,12 @@ class Config:
     model_name: str
     ddim_steps: int
     cfg_scale: float
-    control_type: str
-    control_strength: float
+
+    control_net_type: str
+    control_net_strength: float
     canny_low: float
     canny_high: float
+
     seed: int
     image_resolution: int
     x0_strength: float
@@ -108,13 +110,13 @@ def main(cfg: Config):
 
 def get_state(cfg: Config):
     state = global_state.GlobalState()
-    state.update_sd_model(cfg.model_name, cfg.control_type)
+    state.update_sd_model(cfg.model_name, cfg.control_net_type)
     state.update_controller(cfg.inner_strength, cfg.mask_period, cfg.cross_period, cfg.ada_period, cfg.warp_period)
-    state.update_detector(cfg.control_type, cfg.canny_low, cfg.canny_high)
+    state.update_detector(cfg.control_net_type, cfg.canny_low, cfg.canny_high)
     state.processing_state = global_state.ProcessingState.FIRST_IMG
 
     control_net = state.ddim_v_sampler.model
-    control_net.control_scales = [cfg.control_strength] * 13
+    control_net.control_scales = [cfg.control_net_strength] * 13
     control_net.cond_stage_model.device = global_state.device
     control_net.to(global_state.device)
     return state
@@ -345,8 +347,8 @@ def get_config(input_path, output_path, prompt) -> Config:
         image_resolution=512,
         x0_strength=1,
 
-        control_type='HED',
-        control_strength=1,
+        control_net_type='HED',
+        control_net_strength=1,
         canny_low=100,
         canny_high=200,
 
