@@ -46,7 +46,7 @@ class Config:
     control_net_canny_high: float
 
     image_resolution: int
-    x0_strength: float
+    denoising_strength: float
     style_update_freq: int
     cross_period: tuple[float, float]
     warp_period: tuple[float, float]
@@ -164,7 +164,7 @@ def generate_first_result(state: global_state.GlobalState, cfg: Config,
         unconditional_conditioning=unconditional_conditioning,
         controller=state.controller,
         x0=x0,
-        strength=1 - cfg.x0_strength
+        strength=1 - cfg.denoising_strength
     )
     return control_net.decode_first_stage(samples)
 
@@ -246,7 +246,7 @@ def generate_next_image(
         unconditional_conditioning=un_cond,
         controller=state.controller,
         x0=x0,
-        strength=1 - cfg.x0_strength
+        strength=1 - cfg.denoising_strength
     )
     direct_result = control_net.decode_first_stage(samples)
 
@@ -314,7 +314,7 @@ def generate_next_image(
             unconditional_conditioning=un_cond,
             controller=state.controller,
             x0=x0,
-            strength=1 - cfg.x0_strength,
+            strength=1 - cfg.denoising_strength,
             xtrg=xtrg,
             mask=masks,
             noise_rescale=noise_rescale
@@ -345,7 +345,7 @@ def get_config(input_path, output_path, prompt) -> Config:
         cfg_scale=7.5,
         seed=123,
         image_resolution=512,
-        x0_strength=1,
+        denoising_strength=1,
 
         control_net_type='HED',
         control_net_strength=1,
