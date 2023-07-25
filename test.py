@@ -39,14 +39,14 @@ class Config:
     ddim_steps: int
     cfg_scale: float
     seed: int
+    image_resolution: int
+    denoising_strength: float
 
     control_net_type: str
     control_net_strength: float
     control_net_canny_low: float
     control_net_canny_high: float
 
-    image_resolution: int
-    denoising_strength: float
     style_update_freq: int
     cross_period: tuple[float, float]
     warp_period: tuple[float, float]
