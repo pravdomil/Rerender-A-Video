@@ -63,7 +63,7 @@ class GlobalState:
         if control_type == 'HED':
             model.load_state_dict(
                 load_state_dict(
-                    huggingface_hub.hf_hub_download('lllyasviel/ControlNet', './models/control_sd15_hed.pth'),
+                    huggingface_hub.hf_hub_download('lllyasviel/ControlNet', 'models/control_sd15_hed.pth'),
                     location=device
                 )
             )
