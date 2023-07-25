@@ -41,8 +41,8 @@ class Config:
 
     control_net_type: str
     control_net_strength: float
-    canny_low: float
-    canny_high: float
+    control_net_canny_low: float
+    control_net_canny_high: float
 
     seed: int
     image_resolution: int
@@ -112,7 +112,7 @@ def get_state(cfg: Config):
     state = global_state.GlobalState()
     state.update_sd_model(cfg.model_name, cfg.control_net_type)
     state.update_controller(cfg.inner_strength, cfg.mask_period, cfg.cross_period, cfg.ada_period, cfg.warp_period)
-    state.update_detector(cfg.control_net_type, cfg.canny_low, cfg.canny_high)
+    state.update_detector(cfg.control_net_type, cfg.control_net_canny_low, cfg.control_net_canny_high)
     state.processing_state = global_state.ProcessingState.FIRST_IMG
 
     control_net = state.ddim_v_sampler.model
@@ -349,8 +349,8 @@ def get_config(input_path, output_path, prompt) -> Config:
 
         control_net_type='HED',
         control_net_strength=1,
-        canny_low=100,
-        canny_high=200,
+        control_net_canny_low=100,
+        control_net_canny_high=200,
 
         style_update_freq=10,
         cross_period=(0, 1),
