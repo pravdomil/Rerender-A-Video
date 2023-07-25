@@ -304,7 +304,6 @@ def get_config(input_path, output_path, prompt) -> src.config.RerenderConfig:
     cfg.image_resolution = 512
     cfg.x0_strength = 1
     cfg.style_update_freq = 10
-    cfg.crop = (0, 0, 0, 0)
     cfg.cross_period = (0, 1)
     cfg.mask_period = (0.5, 0.8)
     cfg.warp_period = (0, 0.1)
@@ -312,6 +311,8 @@ def get_config(input_path, output_path, prompt) -> src.config.RerenderConfig:
     cfg.mask_strength = 0.5
     cfg.inner_strength = 0.9
     cfg.smooth_boundary = True
+
+    cfg.crop = (0, 0, 0, 0)
     cfg.color_preserve = True
 
     return cfg
