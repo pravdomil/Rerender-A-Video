@@ -47,8 +47,9 @@ class Config:
     control_net_canny_low: float
     control_net_canny_high: float
 
-    style_update_freq: int
+    cross_attention_update_freq: int
     cross_attention_period: tuple[float, float]
+    
     warp_period: tuple[float, float]
     mask_period: tuple[float, float]
     ada_period: tuple[float, float]
@@ -299,7 +300,7 @@ def generate_next_image(
 
         tasks = 'keepstyle, keepx0'
 
-        if i % cfg.style_update_freq == 0:
+        if i % cfg.cross_attention_update_freq == 0:
             tasks += ', updatestyle'
 
         state.controller.set_task(tasks, 1.0)
@@ -353,7 +354,7 @@ def get_config(input_path, output_path, prompt) -> Config:
         control_net_canny_low=100,
         control_net_canny_high=200,
 
-        style_update_freq=10,
+        cross_attention_update_freq=10,
         cross_attention_period=(0, 1),
 
         warp_period=(0, 0.1),  # shape fusion - start/end at step
