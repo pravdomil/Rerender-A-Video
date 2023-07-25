@@ -44,7 +44,7 @@ def main(cfg: src.config.RerenderConfig):
     for i, index in enumerate(frame_indexes):
         print(str(round(i / len(frame_indexes) * 100)) + "%")
 
-        reader.seek(index)
+        reader.seek_accurate(index)
         image = reader.next().asnumpy()
 
         result = generate_next_image(
