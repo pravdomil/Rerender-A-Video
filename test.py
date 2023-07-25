@@ -28,8 +28,8 @@ class Config:
     output_path: str
 
     prompt: str
-    a_prompt: str
-    n_prompt: str
+    added_prompt: str
+    negative_prompt: str
 
     frame_count: int
     interval: int
@@ -139,12 +139,12 @@ def generate_first_result(state: global_state.GlobalState, cfg: Config,
     conditioning = {
         'c_concat': [control],
         'c_crossattn': [
-            control_net.get_learned_conditioning([cfg.prompt + ', ' + cfg.a_prompt] * num_samples)
+            control_net.get_learned_conditioning([cfg.prompt + ', ' + cfg.added_prompt] * num_samples)
         ]
     }
     unconditional_conditioning = {
         'c_concat': [control],
-        'c_crossattn': [control_net.get_learned_conditioning([cfg.n_prompt] * num_samples)]
+        'c_crossattn': [control_net.get_learned_conditioning([cfg.negative_prompt] * num_samples)]
     }
     shape = (4, height // 8, width // 8)
 
@@ -198,12 +198,12 @@ def generate_next_image(
     cond = {
         'c_concat': [control],
         'c_crossattn': [
-            control_net.get_learned_conditioning([cfg.prompt + ', ' + cfg.a_prompt] * num_samples)
+            control_net.get_learned_conditioning([cfg.prompt + ', ' + cfg.added_prompt] * num_samples)
         ]
     }
     un_cond = {
         'c_concat': [control],
-        'c_crossattn': [control_net.get_learned_conditioning([cfg.n_prompt] * num_samples)]
+        'c_crossattn': [control_net.get_learned_conditioning([cfg.negative_prompt] * num_samples)]
     }
     shape = (4, height // 8, width // 8)
 
@@ -331,8 +331,8 @@ def get_config(input_path, output_path, prompt) -> Config:
         output_path=output_path,
 
         prompt=prompt,
-        a_prompt='',
-        n_prompt='',
+        added_prompt='',
+        negative_prompt='',
 
         interval=1,
         frame_count=16,
