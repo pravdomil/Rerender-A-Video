@@ -52,6 +52,18 @@ class Config:
     smooth_boundary: bool
     color_preserve: bool
 
+    @property
+    def use_warp(self):
+        return self.warp_period[0] <= self.warp_period[1]
+
+    @property
+    def use_mask(self):
+        return self.mask_period[0] <= self.mask_period[1]
+
+    @property
+    def use_ada(self):
+        return self.ada_period[0] <= self.ada_period[1]
+
 
 def main(cfg: Config):
     state = get_state(cfg)
