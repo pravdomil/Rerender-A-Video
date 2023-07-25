@@ -32,7 +32,7 @@ class Config:
     negative_prompt: str
 
     frame_count: int
-    interval: int
+    frame_skip: int
     crop: tuple[int, int, int, int]
     sd_model: str
     ddim_steps: int
@@ -83,11 +83,11 @@ def main(cfg: Config):
     writer = moviepy.video.io.ffmpeg_writer.FFMPEG_VideoWriter(
         cfg.output_path,
         (cfg.image_resolution, cfg.image_resolution),
-        reader.get_avg_fps() / cfg.interval,
+        reader.get_avg_fps() / cfg.frame_skip,
         ffmpeg_params=["-crf", "15", "-metadata", "title=Rerender A Video\n" + cfg.prompt],
     )
 
-    frame_indexes = range(0, cfg.frame_count, cfg.interval)
+    frame_indexes = range(0, cfg.frame_count, cfg.frame_skip)
     for i, index in enumerate(frame_indexes):
         print(str(round(i / len(frame_indexes) * 100)) + "%")
 
@@ -334,7 +334,7 @@ def get_config(input_path, output_path, prompt) -> Config:
         added_prompt='',
         negative_prompt='',
 
-        interval=1,
+        frame_skip=1,
         frame_count=16,
 
         sd_model='Stable Diffusion 1.5',
