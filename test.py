@@ -37,7 +37,7 @@ class Config:
 
     model_name: str
     ddim_steps: int
-    scale: float
+    cfg_scale: float
     control_type: str
     control_strength: float
     canny_low: float
@@ -158,7 +158,7 @@ def generate_first_result(state: global_state.GlobalState, cfg: Config,
         shape,
         conditioning=conditioning,
         verbose=False,
-        unconditional_guidance_scale=cfg.scale,
+        unconditional_guidance_scale=cfg.cfg_scale,
         unconditional_conditioning=unconditional_conditioning,
         controller=state.controller,
         x0=x0,
@@ -240,7 +240,7 @@ def generate_next_image(
         shape,
         cond,
         verbose=False,
-        unconditional_guidance_scale=cfg.scale,
+        unconditional_guidance_scale=cfg.cfg_scale,
         unconditional_conditioning=un_cond,
         controller=state.controller,
         x0=x0,
@@ -308,7 +308,7 @@ def generate_next_image(
             shape,
             cond,
             verbose=False,
-            unconditional_guidance_scale=cfg.scale,
+            unconditional_guidance_scale=cfg.cfg_scale,
             unconditional_conditioning=un_cond,
             controller=state.controller,
             x0=x0,
@@ -340,7 +340,7 @@ def get_config(input_path, output_path, prompt) -> Config:
 
         model_name='Stable Diffusion 1.5',
         ddim_steps=20,
-        scale=7.5,
+        cfg_scale=7.5,
         seed=123,
         image_resolution=512,
         x0_strength=1,
