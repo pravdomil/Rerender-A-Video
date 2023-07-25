@@ -53,10 +53,10 @@ class Config:
     warp_period: tuple[float, float]
 
     mask_period: tuple[float, float]
-
-    ada_period: tuple[float, float]
     mask_strength: float
     inner_strength: float
+
+    ada_period: tuple[float, float]
     smooth_boundary: bool
     color_preserve: bool
 
