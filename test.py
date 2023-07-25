@@ -314,7 +314,7 @@ def get_config(input_path, output_path, prompt) -> src.config.RerenderConfig:
     cfg.inner_strength = 0.9
     cfg.smooth_boundary = True
 
-    cfg.crop = (0, 0, 0, 0)
-    cfg.color_preserve = True
+    cfg.crop = (0, 0, 0, 0)  # not used
+    cfg.color_preserve = True  # not used
 
     return cfg
