@@ -35,7 +35,7 @@ class Config:
     end_frame: int
     frame_skip: int
 
-    sd_model: str
+    model_name: str
     ddim_steps: int
     scale: float
     control_type: str
@@ -108,7 +108,7 @@ def main(cfg: Config):
 
 def get_state(cfg: Config):
     state = global_state.GlobalState()
-    state.update_sd_model(cfg.sd_model, cfg.control_type)
+    state.update_sd_model(cfg.model_name, cfg.control_type)
     state.update_controller(cfg.inner_strength, cfg.mask_period, cfg.cross_period, cfg.ada_period, cfg.warp_period)
     state.update_detector(cfg.control_type, cfg.canny_low, cfg.canny_high)
     state.processing_state = global_state.ProcessingState.FIRST_IMG
@@ -338,7 +338,7 @@ def get_config(input_path, output_path, prompt) -> Config:
         frame_skip=1,
         end_frame=16,
 
-        sd_model='Stable Diffusion 1.5',
+        model_name='Stable Diffusion 1.5',
         ddim_steps=20,
         scale=7.5,
         seed=123,
