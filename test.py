@@ -36,11 +36,11 @@ class Config:
     frame_skip: int
 
     model_name: str
+    image_resolution: int
     ddim_steps: int
     cfg_scale: float
-    seed: int
-    image_resolution: int
     denoising_strength: float
+    seed: int
 
     control_net_type: str
     control_net_strength: float
