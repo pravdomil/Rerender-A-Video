@@ -35,7 +35,6 @@ class Config:
     end_frame: int
     frame_skip: int
 
-    crop: tuple[int, int, int, int]
     sd_model: str
     ddim_steps: int
     scale: float
@@ -364,6 +363,5 @@ def get_config(input_path, output_path, prompt) -> Config:
 
         smooth_boundary=True,
 
-        crop=(0, 0, 0, 0),  # not used
         color_preserve=True,  # not used
     )
