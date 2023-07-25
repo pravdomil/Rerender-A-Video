@@ -31,6 +31,7 @@ class Config:
     added_prompt: str
     negative_prompt: str
 
+    start_frame: int
     end_frame: int
     frame_skip: int
 
@@ -88,7 +89,7 @@ def main(cfg: Config):
         ffmpeg_params=["-crf", "15", "-metadata", "title=Rerender A Video\n" + cfg.prompt],
     )
 
-    frame_indexes = range(0, cfg.end_frame, cfg.frame_skip)
+    frame_indexes = range(cfg.start_frame, cfg.end_frame, cfg.frame_skip)
     for i, index in enumerate(frame_indexes):
         print(str(round(i / len(frame_indexes) * 100)) + "%")
 
