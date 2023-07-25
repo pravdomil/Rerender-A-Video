@@ -49,9 +49,11 @@ class Config:
 
     cross_attention_update_freq: int
     cross_attention_period: tuple[float, float]
-    
+
     warp_period: tuple[float, float]
+
     mask_period: tuple[float, float]
+
     ada_period: tuple[float, float]
     mask_strength: float
     inner_strength: float
