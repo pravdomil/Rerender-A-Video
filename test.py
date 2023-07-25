@@ -31,7 +31,7 @@ class Config:
     added_prompt: str
     negative_prompt: str
 
-    frame_count: int
+    end_frame: int
     frame_skip: int
 
     crop: tuple[int, int, int, int]
@@ -88,7 +88,7 @@ def main(cfg: Config):
         ffmpeg_params=["-crf", "15", "-metadata", "title=Rerender A Video\n" + cfg.prompt],
     )
 
-    frame_indexes = range(0, cfg.frame_count, cfg.frame_skip)
+    frame_indexes = range(0, cfg.end_frame, cfg.frame_skip)
     for i, index in enumerate(frame_indexes):
         print(str(round(i / len(frame_indexes) * 100)) + "%")
 
@@ -336,7 +336,7 @@ def get_config(input_path, output_path, prompt) -> Config:
         negative_prompt='',
 
         frame_skip=1,
-        frame_count=16,
+        end_frame=16,
 
         sd_model='Stable Diffusion 1.5',
         ddim_steps=20,
