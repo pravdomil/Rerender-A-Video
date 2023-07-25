@@ -37,6 +37,8 @@ class Config:
     scale: float
     control_type: str
     control_strength: float
+    canny_low: float
+    canny_high: float
     seed: int
     image_resolution: int
     x0_strength: float
@@ -51,7 +53,7 @@ class Config:
     color_preserve: bool
 
 
-def main(cfg: src.config.RerenderConfig):
+def main(cfg: Config):
     state = get_state(cfg)
 
     # noinspection PyUnresolvedReferences
@@ -89,7 +91,7 @@ def main(cfg: src.config.RerenderConfig):
     writer.close()
 
 
-def get_state(cfg: src.config.RerenderConfig):
+def get_state(cfg: Config):
     state = global_state.GlobalState()
     state.update_sd_model(cfg.sd_model, cfg.control_type)
     state.update_controller(cfg.inner_strength, cfg.mask_period, cfg.cross_period, cfg.ada_period, cfg.warp_period)
@@ -103,7 +105,7 @@ def get_state(cfg: src.config.RerenderConfig):
     return state
 
 
-def generate_first_result(state: global_state.GlobalState, cfg: src.config.RerenderConfig,
+def generate_first_result(state: global_state.GlobalState, cfg: Config,
                           input_image: numpy.ndarray) -> torch.Tensor:
     control_net = state.ddim_v_sampler.model
     height, width, _ = input_image.shape
@@ -151,7 +153,7 @@ def generate_first_result(state: global_state.GlobalState, cfg: src.config.Reren
 
 
 def generate_next_image(
-        cfg: src.config.RerenderConfig,
+        cfg: Config,
         state: global_state.GlobalState,
         first_image: numpy.ndarray,
         first_result: torch.Tensor,
@@ -309,45 +311,43 @@ def torch_to_numpy(a: torch.Tensor) -> numpy.ndarray:
     return samples_normalized.cpu().numpy().clip(0, 255).astype(numpy.uint8)
 
 
-def get_config(input_path, output_path, prompt) -> src.config.RerenderConfig:
-    cfg = src.config.RerenderConfig()
+def get_config(input_path, output_path, prompt) -> Config:
+    return Config(
+        input_path=input_path,
+        output_path=output_path,
 
-    cfg.input_path = input_path
-    cfg.output_path = output_path
+        prompt=prompt,
+        a_prompt='',
+        n_prompt='',
 
-    cfg.prompt = prompt
-    cfg.a_prompt = ''
-    cfg.n_prompt = ''
+        interval=1,
+        frame_count=16,
 
-    cfg.interval = 1
-    cfg.frame_count = 16
+        sd_model='Stable Diffusion 1.5',
+        ddim_steps=20,
+        scale=7.5,
+        seed=123,
+        image_resolution=512,
+        x0_strength=1,
 
-    cfg.sd_model = 'Stable Diffusion 1.5'
-    cfg.ddim_steps = 20
-    cfg.scale = 7.5
-    cfg.seed = 123
-    cfg.image_resolution = 512
-    cfg.x0_strength = 1
+        control_type='HED',
+        control_strength=1,
+        canny_low=100,
+        canny_high=200,
 
-    cfg.control_type = 'HED'
-    cfg.control_strength = 1
-    cfg.canny_low = 100
-    cfg.canny_high = 200
+        style_update_freq=10,
+        cross_period=(0, 1),
 
-    cfg.style_update_freq = 10
-    cfg.cross_period = (0, 1)
+        warp_period=(0, 0.1),  # shape fusion - start/end at step
 
-    cfg.warp_period = (0, 0.1)  # shape fusion - start/end at step
+        mask_period=(0.5, 0.8),  # pixel fusion - start/end at step
+        mask_strength=0.5,  # pixel fusion strength
+        inner_strength=0.9,  # pixel fusion detail level - low value prevents artifacts
 
-    cfg.mask_period = (0.5, 0.8)  # pixel fusion - start/end at step
-    cfg.mask_strength = 0.5  # pixel fusion strength
-    cfg.inner_strength = 0.9  # pixel fusion detail level - low value prevents artifacts
+        ada_period=(1.0, 1.0),  # color fusion - start/end at step
 
-    cfg.ada_period = (1.0, 1.0)  # color fusion - start/end at step
+        smooth_boundary=True,
 
-    cfg.smooth_boundary = True
-
-    cfg.crop = (0, 0, 0, 0)  # not used
-    cfg.color_preserve = True  # not used
-
-    return cfg
+        crop=(0, 0, 0, 0),  # not used
+        color_preserve=True,  # not used
+    )
