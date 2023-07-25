@@ -306,13 +306,13 @@ def get_config(input_path, output_path, prompt) -> src.config.RerenderConfig:
     cfg.style_update_freq = 10
     cfg.cross_period = (0, 1)
 
-    cfg.warp_period = (0, 0.1)  # shape fusion - percent of steps
+    cfg.warp_period = (0, 0.1)  # shape fusion - start/end at step
 
-    cfg.mask_period = (0.5, 0.8)  # pixel fusion - percent of steps
+    cfg.mask_period = (0.5, 0.8)  # pixel fusion - start/end at step
     cfg.mask_strength = 0.5  # pixel fusion strength
     cfg.inner_strength = 0.9  # pixel fusion detail level - low value prevents artifacts
 
-    cfg.ada_period = (1.0, 1.0)  # color fusion - percent of steps
+    cfg.ada_period = (1.0, 1.0)  # color fusion - start/end at step
 
     cfg.smooth_boundary = True
 
