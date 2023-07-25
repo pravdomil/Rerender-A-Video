@@ -4,6 +4,7 @@ import accelerate.utils
 import blendmodes.blend
 # noinspection PyPackageRequirements
 import einops
+# noinspection PyPackageRequirements
 import moviepy.video.io.ffmpeg_writer
 import numpy
 import torch
