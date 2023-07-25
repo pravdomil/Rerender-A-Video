@@ -48,7 +48,7 @@ class Config:
     control_net_canny_high: float
 
     style_update_freq: int
-    cross_period: tuple[float, float]
+    cross_attention_period: tuple[float, float]
     warp_period: tuple[float, float]
     mask_period: tuple[float, float]
     ada_period: tuple[float, float]
@@ -111,7 +111,8 @@ def main(cfg: Config):
 def get_state(cfg: Config):
     state = global_state.GlobalState()
     state.update_sd_model(cfg.model_name, cfg.control_net_type)
-    state.update_controller(cfg.inner_strength, cfg.mask_period, cfg.cross_period, cfg.ada_period, cfg.warp_period)
+    state.update_controller(cfg.inner_strength, cfg.mask_period, cfg.cross_attention_period, cfg.ada_period,
+                            cfg.warp_period)
     state.update_detector(cfg.control_net_type, cfg.control_net_canny_low, cfg.control_net_canny_high)
     state.processing_state = global_state.ProcessingState.FIRST_IMG
 
@@ -353,7 +354,7 @@ def get_config(input_path, output_path, prompt) -> Config:
         control_net_canny_high=200,
 
         style_update_freq=10,
-        cross_period=(0, 1),
+        cross_attention_period=(0, 1),
 
         warp_period=(0, 0.1),  # shape fusion - start/end at step
 
