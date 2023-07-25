@@ -294,15 +294,15 @@ def get_config(input_path, output_path, prompt) -> src.config.RerenderConfig:
     cfg.sd_model = 'Stable Diffusion 1.5'
     cfg.ddim_steps = 20
     cfg.scale = 7.5
-
-    cfg.control_type = 'HED'
-    cfg.canny_low = 100
-    cfg.canny_high = 200
-
-    cfg.control_strength = 1
     cfg.seed = 123
     cfg.image_resolution = 512
     cfg.x0_strength = 1
+
+    cfg.control_type = 'HED'
+    cfg.control_strength = 1
+    cfg.canny_low = 100
+    cfg.canny_high = 200
+
     cfg.style_update_freq = 10
     cfg.cross_period = (0, 1)
 
