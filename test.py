@@ -33,6 +33,7 @@ class Config:
 
     frame_count: int
     frame_skip: int
+
     crop: tuple[int, int, int, int]
     sd_model: str
     ddim_steps: int
