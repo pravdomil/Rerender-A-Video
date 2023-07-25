@@ -311,7 +311,7 @@ def get_config(input_path, output_path, prompt) -> src.config.RerenderConfig:
     cfg.mask_strength = 0.5
     cfg.ada_period = (1.0, 1.0)  # color fusion - percent of steps
 
-    cfg.inner_strength = 0.9  # pixel fusion detail level - Use a low value to prevent artifacts
+    cfg.inner_strength = 0.9  # pixel fusion detail level - low value prevents artifacts
     cfg.smooth_boundary = True
 
     cfg.crop = (0, 0, 0, 0)  # not used
