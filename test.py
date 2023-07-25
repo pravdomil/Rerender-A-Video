@@ -29,7 +29,7 @@ class Config:
     prompt: str
     frame_count: int
     interval: int
-    crop: (int, int, int, int)
+    crop: tuple[int, int, int, int]
     sd_model: str
     a_prompt: str
     n_prompt: str
@@ -43,10 +43,10 @@ class Config:
     image_resolution: int
     x0_strength: float
     style_update_freq: int
-    cross_period: (float, float)
-    warp_period: (float, float)
-    mask_period: (float, float)
-    ada_period: (float, float)
+    cross_period: tuple[float, float]
+    warp_period: tuple[float, float]
+    mask_period: tuple[float, float]
+    ada_period: tuple[float, float]
     mask_strength: float
     inner_strength: float
     smooth_boundary: bool
