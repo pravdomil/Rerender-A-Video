@@ -342,15 +342,15 @@ def get_config(input_path, output_path, prompt) -> Config:
         added_prompt='',
         negative_prompt='',
 
-        frame_skip=1,
         end_frame=16,
+        frame_skip=1,
 
         model_name='Stable Diffusion 1.5',
+        image_resolution=512,
         ddim_steps=20,
         cfg_scale=7.5,
-        seed=123,
-        image_resolution=512,
         denoising_strength=1,
+        seed=123,
 
         control_net_type='HED',
         control_net_strength=1,
