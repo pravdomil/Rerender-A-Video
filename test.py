@@ -342,6 +342,7 @@ def get_config(input_path, output_path, prompt) -> Config:
         added_prompt='',
         negative_prompt='',
 
+        start_frame=0,
         end_frame=16,
         frame_skip=1,
 
