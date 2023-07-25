@@ -56,7 +56,8 @@ class Config:
     mask_strength: float
     mask_detail_inner_strength: float
 
-    ada_period: tuple[float, float]
+    ada_color_fusion_period: tuple[float, float]
+
     smooth_boundary: bool
     color_preserve: bool
 
@@ -70,7 +71,7 @@ class Config:
 
     @property
     def use_ada(self):
-        return self.ada_period[0] <= self.ada_period[1]
+        return self.ada_color_fusion_period[0] <= self.ada_color_fusion_period[1]
 
 
 def main(cfg: Config):
@@ -114,8 +115,8 @@ def main(cfg: Config):
 def get_state(cfg: Config):
     state = global_state.GlobalState()
     state.update_sd_model(cfg.model_name, cfg.control_net_type)
-    state.update_controller(cfg.mask_detail_inner_strength, cfg.mask_period, cfg.cross_attention_period, cfg.ada_period,
-                            cfg.warp_period)
+    state.update_controller(cfg.mask_detail_inner_strength, cfg.mask_period, cfg.cross_attention_period,
+                            cfg.ada_color_fusion_period, cfg.warp_period)
     state.update_detector(cfg.control_net_type, cfg.control_net_canny_low, cfg.control_net_canny_high)
     state.processing_state = global_state.ProcessingState.FIRST_IMG
 
@@ -365,7 +366,7 @@ def get_config(input_path, output_path, prompt) -> Config:
         mask_strength=0.5,  # pixel fusion strength
         mask_detail_inner_strength=0.9,  # pixel fusion detail level - low value prevents artifacts
 
-        ada_period=(0.0, 1.0),  # color fusion - start/end at step
+        ada_color_fusion_period=(0.0, 1.0),  # color fusion - start/end at step
 
         smooth_boundary=True,
 
