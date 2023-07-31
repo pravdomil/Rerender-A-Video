@@ -101,7 +101,7 @@ def main(cfg: Config):
         reader.seek_accurate(index)
         image = reader.next().asnumpy()
 
-        result = generate_next_image(
+        result = generate_next_result(
             cfg, state, first_image, first_result, previous_image, previous_result, i, image)
 
         writer.write_frame(torch_to_numpy(result)[0])
@@ -174,7 +174,7 @@ def generate_first_result(state: global_state.GlobalState, cfg: Config,
     return control_net.decode_first_stage(samples)
 
 
-def generate_next_image(
+def generate_next_result(
         cfg: Config,
         state: global_state.GlobalState,
         first_image: numpy.ndarray,
