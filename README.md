@@ -1,12 +1,8 @@
----
-title: Rerender
-emoji: ⚡
-colorFrom: green
-colorTo: indigo
-sdk: gradio
-sdk_version: 3.35.2
-app_file: app.py
-pinned: false
----
+# Rerender A Video
 
-Check out the configuration reference at https://huggingface.co/docs/hub/spaces-config-reference
+Usage:
+
+```python
+import test
+test.main(get_config("input.mp4", "output.mp4", "watercolor painting"))
+```
